@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Citizen 4.7 - Quality Distribution Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88, #00d9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .category-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .category-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+            color: #00d9ff;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .chart-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: #00d9ff;
+        }
+        
+        .tooltip-icon {
+            cursor: help;
+            color: #ffc107;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            user-select: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-default {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .badge-pyro {
+            background: rgba(255, 100, 50, 0.2);
+            color: #ff6432;
+            border: 1px solid rgba(255, 100, 50, 0.5);
+        }
+        
+        .legend {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .legend-label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .info-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #ffc107;
+        }
+
+        .composition-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .rarity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .rarity-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .rarity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .rarity-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rarity-common { color: #ffffff; border-color: #ffffff; }
+        .rarity-uncommon { color: #00ff88; border-color: #00ff88; }
+        .rarity-rare { color: #0099ff; border-color: #0099ff; }
+        .rarity-epic { color: #9900ff; border-color: #9900ff; }
+        .rarity-legendary { color: #ff9900; border-color: #ff9900; }
+
+        .rock-list {
+            list-style: none;
+        }
+
+        .rock-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .rock-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .rock-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .rock-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rock-item.expanded .rock-details {
+            display: block;
+        }
+
+        .composition-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .composition-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 0 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .composition-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .composition-label {
+            min-width: 120px;
+            color: #ccc;
+        }
+
+        .composition-range {
+            min-width: 100px;
+            text-align: right;
+            color: #00d9ff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .expand-hint {
+            color: #666;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .toggle-button {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            color: #00d9ff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-button:hover {
+            background: rgba(0, 217, 255, 0.2);
+        }
+
+        .toggle-button.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid, .rarity-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .composition-row {
+                flex-wrap: wrap;
+            }
+
+            .composition-bar {
+                order: -1;
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>STAR CITIZEN v4.7.0-PTU.11429312</h1>
+        <p class="subtitle">Quality Distribution Analysis - Pyro System vs Default</p>
+        
+        <div class="info-box">
+            <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min, max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000 scale). Theoretical minimum values (shown with ??) are calculated from the normal distribution formula - the game may use a different algorithm, so you may not encounter rocks at these exact theoretical minimums. Pyro system overrides typically offer improved distributions compared to default settings.
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 255, 255, 0.6)"></div>
+                <span class="legend-label">Default Distribution</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 100, 50, 0.8)"></div>
+                <span class="legend-label">Pyro Override</span>
+            </div>
+        </div>
+
+        <div id="quality-distributions"></div>
+
+        <div class="category-section" id="rock-compositions">
+            <h2 class="category-title">💎 Rock Composition Ranges</h2>
+            <div class="info-box">
+                <strong>Click on any mineral rock</strong> to see its composition breakdown. These ranges show the minimum and maximum percentage of each mineral that can be found in a rock of that type. Values represent the percentage composition of the rock's total content.
+            </div>
+            
+            <div class="rarity-grid" id="rarity-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const distributions = [
+            {
+                category: "Ship Mineables",
+                items: [
+                    {
+                        name: "Common",
+                        default: { mean: 130, min: 201, max: 1000, stddev: 265 },
+                        pyro: { mean: 156, min: 201, max: 1000, stddev: 365 }
+                    },
+                    {
+                        name: "Uncommon",
+                        default: { mean: 139, min: 255, max: 1000, stddev: 270 },
+                        pyro: { mean: 167, min: 255, max: 1000, stddev: 270 }
+                    },
+                    {
+                        name: "Rare",
+                        default: { mean: 164, min: 303, max: 1000, stddev: 275 },
+                        pyro: { mean: 196, min: 303, max: 1000, stddev: 275 }
+                    },
+                    {
+                        name: "Epic",
+                        default: { mean: 194, min: 359, max: 1000, stddev: 289 },
+                        pyro: { mean: 233, min: 359, max: 1000, stddev: 286 }
+                    },
+                    {
+                        name: "Legendary",
+                        default: { mean: 200, min: 404, max: 1000, stddev: 294 },
+                        pyro: { mean: 244, min: 404, max: 1000, stddev: 294 }
+                    }
+                ]
+            },
+            {
+                category: "Harvestables",
+                items: [
+                    {
+                        name: "Gatherable",
+                        default: { mean: 269, min: 1, max: 1000, stddev: 254 },
+                        pyro: { mean: 295, min: 1, max: 1000, stddev: 254 }
+                    }
+                ]
+            },
+            {
+                category: "Ground Mineables",
+                items: [
+                    {
+                        name: "Ground Mineable",
+                        default: { mean: 297, min: 1, max: 1000, stddev: 256 },
+                        pyro: { mean: 324, min: 1, max: 1000, stddev: 256 }
+                    }
+                ]
+            },
+            {
+                category: "FPS Mineables",
+                items: [
+                    {
+                        name: "FPS Mineable",
+                        default: { mean: 297, min: 1, max: 1000, stddev: 256 },
+                        pyro: { mean: 324, min: 1, max: 1000, stddev: 256 }
+                    }
+                ]
+            },
+            {
+                category: "Creatures",
+                items: [
+                    {
+                        name: "Creature",
+                        default: { mean: 269, min: 1, max: 1000, stddev: 254 },
+                        pyro: { mean: 295, min: 1, max: 1000, stddev: 254 }
+                    }
+                ]
+            }
+        ];
+
+        const rockCompositions = {
+            Common: [
+                { name: "Iron", compositions: [{ mineral: "Iron", min: 50, max: 100 }] },
+                { name: "Tin", compositions: [{ mineral: "Tin", min: 40, max: 80 }, { mineral: "Iron", min: 10, max: 20 }] },
+                { name: "Silicon", compositions: [{ mineral: "Silicon", min: 40, max: 80 }, { mineral: "Quartz", min: 5, max: 10 }, { mineral: "Laranite", min: 5, max: 10 }] },
+                { name: "Quartz", compositions: [{ mineral: "Quartz", min: 40, max: 80 }, { mineral: "Laranite", min: 5, max: 10 }, { mineral: "Silicon", min: 5, max: 10 }] },
+                { name: "Copper", compositions: [{ mineral: "Copper", min: 40, max: 80 }, { mineral: "Tin", min: 10, max: 20 }] },
+                { name: "Aluminum", compositions: [{ mineral: "Aluminum", min: 40, max: 80 }, { mineral: "Hephaestanite", min: 10, max: 20 }] },
+                { name: "Ice", compositions: [{ mineral: "Ice", min: 50, max: 100 }] },
+                { name: "Hephaestanite", compositions: [{ mineral: "Hephaestanite", min: 50, max: 100 }] },
+                { name: "Corundum", compositions: [{ mineral: "Corundum", min: 50, max: 100 }] }
+            ],
+            Uncommon: [
+                { name: "Tungsten", compositions: [{ mineral: "Tungsten", min: 40, max: 80 }, { mineral: "Titanium", min: 10, max: 20 }] },
+                { name: "Titanium", compositions: [{ mineral: "Titanium", min: 40, max: 80 }, { mineral: "Aluminum", min: 5, max: 10 }, { mineral: "Hephaestanite", min: 5, max: 10 }] },
+                { name: "Laranite", compositions: [{ mineral: "Laranite", min: 40, max: 80 }, { mineral: "Tungsten", min: 10, max: 20 }] },
+                { name: "Agricium", compositions: [{ mineral: "Agricium", min: 50, max: 80 }, { mineral: "Titanium", min: 5, max: 10 }, { mineral: "Corundum", min: 5, max: 10 }] },
+                { name: "Aslarite", compositions: [{ mineral: "Aslarite", min: 50, max: 100 }] }
+            ],
+            Rare: [
+                { name: "Gold", compositions: [{ mineral: "Gold", min: 40, max: 80 }, { mineral: "Beryl", min: 5, max: 10 }, { mineral: "Borase", min: 5, max: 10 }] },
+                { name: "Beryl", compositions: [{ mineral: "Beryl", min: 50, max: 100 }] },
+                { name: "Taranite", compositions: [{ mineral: "Taranite", min: 50, max: 100 }] },
+                { name: "Bexalite", compositions: [{ mineral: "Bexalite", min: 40, max: 80 }, { mineral: "Gold", min: 5, max: 10 }, { mineral: "Beryl", min: 5, max: 10 }] },
+                { name: "Borase", compositions: [{ mineral: "Borase", min: 40, max: 80 }, { mineral: "Beryl", min: 5, max: 10 }, { mineral: "Gold", min: 5, max: 10 }] }
+            ],
+            Epic: [
+                { name: "Riccite", compositions: [{ mineral: "Riccite", min: 40, max: 80 }, { mineral: "Hephaestanite", min: 10, max: 20 }] },
+                { name: "Ouratite", compositions: [{ mineral: "Ouratite", min: 40, max: 80 }, { mineral: "Corundum", min: 10, max: 20 }] },
+                { name: "Lindinium", compositions: [{ mineral: "Lindinium", min: 40, max: 80 }, { mineral: "Tungsten", min: 10, max: 20 }] }
+            ],
+            Legendary: [
+                { name: "Stileron", compositions: [{ mineral: "Stileron", min: 40, max: 80 }, { mineral: "Taranite", min: 10, max: 20 }] },
+                { name: "Quantainium", compositions: [{ mineral: "Quantainium", min: 40, max: 80 }, { mineral: "Savrilium", min: 10, max: 20 }] },
+                { name: "Savrilium", compositions: [{ mineral: "Savrilium", min: 40, max: 80 }, { mineral: "Gold", min: 10, max: 20 }] }
+            ]
+        };
+
+        const rarityColors = {
+            Common: '#ffffff',
+            Uncommon: '#00ff88',
+            Rare: '#0099ff',
+            Epic: '#9900ff',
+            Legendary: '#ff9900'
+        };
+
+        function normalDistributionPDF(x, mean, stddev) {
+            const exponent = -0.5 * Math.pow((x - mean) / stddev, 2);
+            return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
+        }
+
+        function generateDistributionData(dist, numPoints = 200) {
+            const data = [];
+            // Plot from 1 to max, so curve starts at minimum
+            const step = (dist.max - 1) / numPoints;
+            for (let i = 0; i <= numPoints; i++) {
+                const x = 1 + i * step;
+                if (x >= 1 && x <= dist.max) {
+                    const y = normalDistributionPDF(x, dist.mean, dist.stddev);
+                    data.push({ x: Math.round(x), y: parseFloat(y.toFixed(6)) });
+                }
+            }
+            return data;
+        }
+
+        function createCategorySection(categoryData) {
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            
+            const title = document.createElement('h2');
+            title.className = 'category-title';
+            title.textContent = categoryData.category;
+            section.appendChild(title);
+            
+            const grid = document.createElement('div');
+            grid.className = 'charts-grid';
+            
+            categoryData.items.forEach(item => {
+                const container = document.createElement('div');
+                container.className = 'chart-container';
+                
+                const chartTitle = document.createElement('h3');
+                chartTitle.className = 'chart-title';
+                chartTitle.innerHTML = `${item.name} <span class="badge badge-default">Default</span> <span class="badge badge-pyro">Pyro</span>`;
+                container.appendChild(chartTitle);
+                
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${categoryData.category.replace(/\s/g, '-')}-${item.name.replace(/\s/g, '-')}`;
+                container.appendChild(canvas);
+                
+                const statsDiv = document.createElement('div');
+                statsDiv.className = 'stats-grid';
+                
+                statsDiv.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">Default Mean</div>
+                        <div class="stat-value">${item.default.mean}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pyro Mean</div>
+                        <div class="stat-value" style="color: #ff6432">${item.pyro.mean}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Improvement</div>
+                        <div class="stat-value" style="color: #00ff88">+${((item.pyro.mean - item.default.mean) / item.default.mean * 100).toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
+                            Quality Range
+                            <span class="tooltip-icon" title="The low end of this range is Theoretical based on normal distribution. It might not be used by the game currently.">?</span>
+                        </div>
+                        <div class="stat-value" style="font-size: 1rem">${item.default.min} - 1000</div>
+                    </div>
+                `;
+                
+                container.appendChild(statsDiv);
+                grid.appendChild(container);
+                
+                // Create chart
+                const ctx = canvas.getContext('2d');
+                const defaultData = generateDistributionData(item.default);
+                const pyroData = generateDistributionData(item.pyro);
+                
+                // X-axis always 1-1000
+                const chartMin = 1;
+                const chartMax = 1000;
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Default',
+                                data: defaultData,
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Pyro',
+                                data: pyroData,
+                                borderColor: 'rgba(255, 100, 50, 0.9)',
+                                backgroundColor: 'rgba(255, 100, 50, 0.15)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#00d9ff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(0, 217, 255, 0.5)',
+                                borderWidth: 1,
+                                callbacks: {
+                                    title: function(context) {
+                                        if (context && context.length > 0) {
+                                            const quality = Math.round(context[0].parsed.x);
+                                            return `Quality: ${quality}`;
+                                        }
+                                        return '';
+                                    },
+                                    label: function(context) {
+                                        if (context && context.length > 0) {
+                                            const quality = Math.round(context[0].parsed.x);
+                                            let result = `Quality: ${quality}\n`;
+                                            
+                                            // Add probability density for both datasets
+                                            if (context[0].parsed && context[0].parsed.y !== undefined) {
+                                                result += `\nDefault Prob: ${(context[0].parsed.y * 1000).toFixed(4)}`;
+                                            }
+                                            if (context[1] && context[1].parsed && context[1].parsed.y !== undefined) {
+                                                result += `\nPyro Prob: ${(context[1].parsed.y * 1000).toFixed(4)}`;
+                                            }
+                                            
+                                            return result;
+                                        }
+                                        return '';
+                                    }
+                                }
+                            },
+                            autoColors: false
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                min: 1,
+                                max: 1000,
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Quality Level',
+                                    color: '#888',
+                                    font: { family: 'Rajdhani' }
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    font: { family: 'Rajdhani' }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                }
+                            },
+                            y: {
+                                beginAtZero: false,
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Probability Density',
+                                    color: '#888',
+                                    font: { family: 'Rajdhani' }
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    font: { family: 'Rajdhani' }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            });
+            
+            section.appendChild(grid);
+            return section;
+        }
+
+        function createRarityCard(rarity, rocks) {
+            const card = document.createElement('div');
+            card.className = 'rarity-card';
+            
+            const title = document.createElement('div');
+            title.className = `rarity-title rarity-${rarity.toLowerCase()}`;
+            title.innerHTML = `<span>★</span> ${rarity}`;
+            card.appendChild(title);
+            
+            const rockList = document.createElement('ul');
+            rockList.className = 'rock-list';
+            
+            rocks.forEach(rock => {
+                const rockItem = document.createElement('li');
+                rockItem.className = 'rock-item';
+                
+                const rockName = document.createElement('div');
+                rockName.className = 'rock-name';
+                rockName.innerHTML = `${rock.name} <span class="expand-hint">▼</span>`;
+                rockItem.appendChild(rockName);
+                
+                const details = document.createElement('div');
+                details.className = 'rock-details';
+                
+                rock.compositions.forEach(comp => {
+                    const row = document.createElement('div');
+                    row.className = 'composition-row';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'composition-label';
+                    label.textContent = comp.mineral;
+                    
+                    const bar = document.createElement('div');
+                    bar.className = 'composition-bar';
+                    
+                    const fill = document.createElement('div');
+                    fill.className = 'composition-fill';
+                    fill.style.width = `${comp.max}%`;
+                    fill.style.background = rarityColors[rarity];
+                    fill.style.opacity = '0.6';
+                    bar.appendChild(fill);
+                    
+                    const range = document.createElement('span');
+                    range.className = 'composition-range';
+                    range.textContent = `${comp.min}% - ${comp.max}%`;
+                    
+                    row.appendChild(label);
+                    row.appendChild(bar);
+                    row.appendChild(range);
+                    details.appendChild(row);
+                });
+                
+                rockItem.appendChild(details);
+                rockList.appendChild(rockItem);
+                
+                rockItem.addEventListener('click', () => {
+                    rockItem.classList.toggle('expanded');
+                    const hint = rockItem.querySelector('.expand-hint');
+                    hint.textContent = rockItem.classList.contains('expanded') ? '▲' : '▼';
+                });
+            });
+            
+            card.appendChild(rockList);
+            return card;
+        }
+
+        // Render quality distributions
+        const qualityDistContainer = document.getElementById('quality-distributions');
+        distributions.forEach(category => {
+            qualityDistContainer.appendChild(createCategorySection(category));
+        });
+
+        // Render rock compositions
+        const rarityGrid = document.getElementById('rarity-grid');
+        Object.keys(rockCompositions).forEach(rarity => {
+            rarityGrid.appendChild(createRarityCard(rarity, rockCompositions[rarity]));
+        });
+    </script>
+
+    <footer style="margin-top: 60px; padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">Unofficial Fan Site</h3>
+        <p style="color: #888; font-size: 0.9rem; line-height: 1.6; max-width: 800px; margin: 0 auto;">
+            This site is not endorsed by or affiliated with Cloud Imperium or Roberts Space Industries group of companies. 
+            All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd. 
+            Star Citizen®, Squadron 42®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. 
+            All rights reserved. This is a community-created tool for informational purposes only.
+        </p>
+        <p style="margin-top: 20px; color: #666; font-size: 0.8rem;">
+            Data sourced from Star Citizen 4.7 patch files
+        </p>
+    </footer>
+</body>
+</html>
