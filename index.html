@@ -301,6 +301,92 @@
             border-color: #3296ff;
         }
 
+        .yield-controls {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(50, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .yield-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .yield-title {
+            font-family: 'Orbitron', sans-serif;
+            color: #3296ff;
+            font-size: 1.1rem;
+        }
+
+        .yield-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #00ff88;
+        }
+
+        .yield-sections {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .yield-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .yield-section-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .yield-checkboxes {
+            display: flex;
+            gap: 10px;
+        }
+
+        .yield-checkbox {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .yield-checkbox:checked {
+            background: rgba(50, 150, 255, 0.3);
+            border-color: #3296ff;
+        }
+
+        .yield-checkbox:checked::after {
+            content: '✓';
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #3296ff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .yield-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #ffc107;
+        }
+
         .rock-list {
             list-style: none;
         }
@@ -831,6 +917,36 @@
                             RCD applies to non-Torite nodes in RCD locations. Torite Override applies specifically to Torite rocks in RCD locations.
                             The values shown are averages across all RCD locations in the game. <b>These values are most likely the minimum values for the contract</b>
                         </div>
+                        
+                        <div class="yield-controls">
+                            <div class="yield-header">
+                                <span class="yield-title">Yield Bonus</span>
+                                <span class="yield-value" id="yield-value">10%</span>
+                            </div>
+                            <div class="yield-sections">
+                                <div class="yield-section">
+                                    <span class="yield-section-label">Lenses (+10% each)</span>
+                                    <div class="yield-checkboxes">
+                                        <input type="checkbox" class="yield-checkbox" id="lens1" data-type="lens">
+                                        <input type="checkbox" class="yield-checkbox" id="lens2" data-type="lens">
+                                        <input type="checkbox" class="yield-checkbox" id="lens3" data-type="lens">
+                                    </div>
+                                </div>
+                                <div class="yield-section">
+                                    <span class="yield-section-label">Refractors (+20% each)</span>
+                                    <div class="yield-checkboxes">
+                                        <input type="checkbox" class="yield-checkbox" id="refractor1" data-type="refractor">
+                                        <input type="checkbox" class="yield-checkbox" id="refractor2" data-type="refractor">
+                                        <input type="checkbox" class="yield-checkbox" id="refractor3" data-type="refractor">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="yield-note">
+                                <strong>Assumption:</strong> Each 10% yield bonus adds approximately 100 to the mean quality. 
+                                This is an estimate based on current data and may not reflect actual game mechanics.
+                            </div>
+                        </div>
+                        
                         <div class="rarity-grid" id="rcd-grid"></div>
                     </div>
                 `;
@@ -903,6 +1019,82 @@
                 if (rocks && rocks.length > 0) {
                     rarityGrid.appendChild(createRarityCard(rarity, rocks));
                 }
+            }
+
+            // Setup yield controls for RCD section
+            if (rockCrackerData && (rockCrackerData.rcd?.length > 0 || rockCrackerData.torite?.length > 0)) {
+                setupYieldControls(rockCrackerData);
+            }
+        }
+
+        let rcdDataStore = null;
+
+        function setupYieldControls(rockCrackerData) {
+            rcdDataStore = rockCrackerData;
+            
+            const checkboxes = document.querySelectorAll('.yield-checkbox');
+            const yieldValueEl = document.getElementById('yield-value');
+            
+            function calculateYield() {
+                let yieldPercent = 10; // Base yield
+                
+                const lensCheckboxes = document.querySelectorAll('#lens1, #lens2, #lens3');
+                const refractorCheckboxes = document.querySelectorAll('#refractor1, #refractor2, #refractor3');
+                
+                lensCheckboxes.forEach(cb => {
+                    if (cb.checked) yieldPercent += 10;
+                });
+                
+                refractorCheckboxes.forEach(cb => {
+                    if (cb.checked) yieldPercent += 20;
+                });
+                
+                yieldValueEl.textContent = yieldPercent + '%';
+                
+                updateRcdCharts(yieldPercent);
+            }
+            
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', calculateYield);
+            });
+            
+            // Initial calculation
+            calculateYield();
+        }
+
+        function updateRcdCharts(yieldPercent) {
+            if (!rcdDataStore) return;
+            
+            // Remove old RCD charts
+            const rcdGrid = document.getElementById('rcd-grid');
+            rcdGrid.innerHTML = '';
+            
+            const baseYield = 10;
+            const yieldBonus = yieldPercent - baseYield;
+            const meanBonus = (yieldBonus / 10) * 100; // Each 10% adds 100 to mean
+            
+            // Create modified data with adjusted means
+            const adjustedRcd = rcdDataStore.rcd?.map(item => ({
+                ...item,
+                rcd: item.rcd ? {
+                    ...item.rcd,
+                    mean: Math.min(item.rcd.mean + meanBonus, 1000)
+                } : null
+            })) || [];
+            
+            const adjustedTorite = rcdDataStore.torite?.map(item => ({
+                ...item,
+                torite: item.torite ? {
+                    ...item.torite,
+                    mean: Math.min(item.torite.mean + meanBonus, 1000)
+                } : null
+            })) || [];
+            
+            if (adjustedRcd.length > 0) {
+                rcdGrid.appendChild(createCategorySection({ category: 'RCD (Non-Torite)', items: adjustedRcd }));
+            }
+            if (adjustedTorite.length > 0) {
+                rcdGrid.appendChild(createCategorySection({ category: 'Torite Only', items: adjustedTorite }));
             }
         }
 
