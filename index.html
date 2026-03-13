@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Citizen 4.7 - Quality Distribution Visualizer</title>
+    <title>Star Citizen - Quality Distribution Visualizer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap');
@@ -28,10 +28,14 @@
             margin: 0 auto;
         }
 
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
         h1 {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
-            text-align: center;
             margin-bottom: 10px;
             background: linear-gradient(90deg, #00d9ff, #00ff88, #00d9ff);
             -webkit-background-clip: text;
@@ -40,11 +44,54 @@
             text-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
         }
 
+        .version-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .version-label {
+            font-family: 'Orbitron', sans-serif;
+            color: #00d9ff;
+            font-size: 1rem;
+        }
+
+        #version-select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 217, 255, 0.5);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            min-width: 250px;
+        }
+
+        #version-select option {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        #version-select:hover {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
         .subtitle {
             text-align: center;
             color: #888;
             margin-bottom: 30px;
             font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #00d9ff;
+            font-size: 1.2rem;
         }
 
         .category-section {
@@ -368,159 +415,40 @@
                 width: 100%;
                 margin: 5px 0;
             }
+
+            .version-selector {
+                flex-direction: column;
+            }
+
+            #version-select {
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>STAR CITIZEN v4.7.0-PTU.11429312</h1>
-        <p class="subtitle">Quality Distribution Analysis - Pyro System vs Default</p>
+        <div class="header">
+            <h1>STAR CITIZEN</h1>
+            <p class="subtitle">Quality Distribution Analysis - Pyro System vs Default</p>
 
-        <div class="info-box">
-            <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min,
-            max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000
-            scale). Theoretical minimum values (shown with ??) are calculated from the normal distribution formula - the
-            game may use a different algorithm, so you may not encounter rocks at these exact theoretical minimums. Pyro
-            system overrides typically offer improved distributions compared to default settings.
-        </div>
-
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: rgba(255, 255, 255, 0.6)"></div>
-                <span class="legend-label">Default Distribution</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: rgba(255, 100, 50, 0.8)"></div>
-                <span class="legend-label">Pyro Override</span>
+            <div class="version-selector">
+                <span class="version-label">VERSION:</span>
+                <select id="version-select">
+                    <option value="">Loading versions...</option>
+                </select>
             </div>
         </div>
 
-        <div id="quality-distributions"></div>
-
-        <div class="category-section" id="rock-compositions">
-            <h2 class="category-title">💎 Rock Composition Ranges</h2>
-            <div class="info-box">
-                <strong>Click on any mineral rock</strong> to see its composition breakdown. These ranges show the
-                minimum and maximum percentage of each mineral that can be found in a rock of that type. Values
-                represent the percentage composition of the rock's total content.
-            </div>
-
-            <div class="rarity-grid" id="rarity-grid"></div>
+        <div id="content">
+            <div class="loading">Loading data...</div>
         </div>
     </div>
 
     <script>
-        const distributions = [
-            {
-                category: "Ship Mineables",
-                items: [
-                    {
-                        name: "Common",
-                        default: { mean: 130, min: 201, max: 1000, stddev: 265 },
-                        pyro: { mean: 156, min: 201, max: 1000, stddev: 365 }
-                    },
-                    {
-                        name: "Uncommon",
-                        default: { mean: 139, min: 255, max: 1000, stddev: 270 },
-                        pyro: { mean: 167, min: 255, max: 1000, stddev: 270 }
-                    },
-                    {
-                        name: "Rare",
-                        default: { mean: 164, min: 303, max: 1000, stddev: 275 },
-                        pyro: { mean: 196, min: 303, max: 1000, stddev: 275 }
-                    },
-                    {
-                        name: "Epic",
-                        default: { mean: 194, min: 359, max: 1000, stddev: 289 },
-                        pyro: { mean: 233, min: 359, max: 1000, stddev: 286 }
-                    },
-                    {
-                        name: "Legendary",
-                        default: { mean: 200, min: 404, max: 1000, stddev: 294 },
-                        pyro: { mean: 244, min: 404, max: 1000, stddev: 294 }
-                    }
-                ]
-            },
-            {
-                category: "Harvestables",
-                items: [
-                    {
-                        name: "Gatherable",
-                        default: { mean: 269, min: 1, max: 1000, stddev: 254 },
-                        pyro: { mean: 295, min: 1, max: 1000, stddev: 254 }
-                    }
-                ]
-            },
-            {
-                category: "Ground Mineables",
-                items: [
-                    {
-                        name: "Ground Mineable",
-                        default: { mean: 297, min: 1, max: 1000, stddev: 256 },
-                        pyro: { mean: 324, min: 1, max: 1000, stddev: 256 }
-                    }
-                ]
-            },
-            {
-                category: "FPS Mineables",
-                items: [
-                    {
-                        name: "FPS Mineable",
-                        default: { mean: 297, min: 1, max: 1000, stddev: 256 },
-                        pyro: { mean: 324, min: 1, max: 1000, stddev: 256 }
-                    }
-                ]
-            },
-            {
-                category: "Creatures",
-                items: [
-                    {
-                        name: "Creature",
-                        default: { mean: 269, min: 1, max: 1000, stddev: 254 },
-                        pyro: { mean: 295, min: 1, max: 1000, stddev: 254 }
-                    }
-                ]
-            }
-        ];
-
-        const rockCompositions = {
-            Common: [
-                { name: "Iron", compositions: [{ mineral: "Iron", min: 50, max: 100 }] },
-                { name: "Tin", compositions: [{ mineral: "Tin", min: 40, max: 80 }, { mineral: "Iron", min: 10, max: 20 }] },
-                { name: "Silicon", compositions: [{ mineral: "Silicon", min: 40, max: 80 }, { mineral: "Quartz", min: 5, max: 10 }, { mineral: "Laranite", min: 5, max: 10 }] },
-                { name: "Quartz", compositions: [{ mineral: "Quartz", min: 40, max: 80 }, { mineral: "Laranite", min: 5, max: 10 }, { mineral: "Silicon", min: 5, max: 10 }] },
-                { name: "Copper", compositions: [{ mineral: "Copper", min: 40, max: 80 }, { mineral: "Tin", min: 10, max: 20 }] },
-                { name: "Aluminum", compositions: [{ mineral: "Aluminum", min: 40, max: 80 }, { mineral: "Hephaestanite", min: 10, max: 20 }] },
-                { name: "Ice", compositions: [{ mineral: "Ice", min: 50, max: 100 }] },
-                { name: "Hephaestanite", compositions: [{ mineral: "Hephaestanite", min: 50, max: 100 }] },
-                { name: "Corundum", compositions: [{ mineral: "Corundum", min: 50, max: 100 }] }
-            ],
-            Uncommon: [
-                { name: "Tungsten", compositions: [{ mineral: "Tungsten", min: 40, max: 80 }, { mineral: "Titanium", min: 10, max: 20 }] },
-                { name: "Titanium", compositions: [{ mineral: "Titanium", min: 40, max: 80 }, { mineral: "Aluminum", min: 5, max: 10 }, { mineral: "Hephaestanite", min: 5, max: 10 }] },
-                { name: "Laranite", compositions: [{ mineral: "Laranite", min: 40, max: 80 }, { mineral: "Tungsten", min: 10, max: 20 }] },
-                { name: "Agricium", compositions: [{ mineral: "Agricium", min: 50, max: 80 }, { mineral: "Titanium", min: 5, max: 10 }, { mineral: "Corundum", min: 5, max: 10 }] },
-                { name: "Aslarite", compositions: [{ mineral: "Aslarite", min: 50, max: 100 }] }
-            ],
-            Rare: [
-                { name: "Gold", compositions: [{ mineral: "Gold", min: 40, max: 80 }, { mineral: "Beryl", min: 5, max: 10 }, { mineral: "Borase", min: 5, max: 10 }] },
-                { name: "Beryl", compositions: [{ mineral: "Beryl", min: 50, max: 100 }] },
-                { name: "Taranite", compositions: [{ mineral: "Taranite", min: 50, max: 100 }] },
-                { name: "Bexalite", compositions: [{ mineral: "Bexalite", min: 40, max: 80 }, { mineral: "Gold", min: 5, max: 10 }, { mineral: "Beryl", min: 5, max: 10 }] },
-                { name: "Borase", compositions: [{ mineral: "Borase", min: 40, max: 80 }, { mineral: "Beryl", min: 5, max: 10 }, { mineral: "Gold", min: 5, max: 10 }] }
-            ],
-            Epic: [
-                { name: "Riccite", compositions: [{ mineral: "Riccite", min: 40, max: 80 }, { mineral: "Hephaestanite", min: 10, max: 20 }] },
-                { name: "Ouratite", compositions: [{ mineral: "Ouratite", min: 40, max: 80 }, { mineral: "Corundum", min: 10, max: 20 }] },
-                { name: "Lindinium", compositions: [{ mineral: "Lindinium", min: 40, max: 80 }, { mineral: "Tungsten", min: 10, max: 20 }] }
-            ],
-            Legendary: [
-                { name: "Stileron", compositions: [{ mineral: "Stileron", min: 40, max: 80 }, { mineral: "Taranite", min: 10, max: 20 }] },
-                { name: "Quantainium", compositions: [{ mineral: "Quantainium", min: 40, max: 80 }, { mineral: "Savrilium", min: 10, max: 20 }] },
-                { name: "Savrilium", compositions: [{ mineral: "Savrilium", min: 40, max: 80 }, { mineral: "Gold", min: 10, max: 20 }] }
-            ]
-        };
+        const VERSIONS = [{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"},{"id":"v4.7.0-PTU.11429312","label":"v4.7.0 PTU 11429312","path":"data/v4.7.0-PTU.11429312"}];
+        const DEFAULT_VERSION = {"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"};
 
         const rarityColors = {
             Common: '#ffffff',
@@ -530,6 +458,9 @@
             Legendary: '#ff9900'
         };
 
+        let currentVersion = null;
+        let charts = [];
+
         function normalDistributionPDF(x, mean, stddev) {
             const exponent = -0.5 * Math.pow((x - mean) / stddev, 2);
             return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
@@ -537,7 +468,6 @@
 
         function generateDistributionData(dist, numPoints = 200) {
             const data = [];
-            // Plot from 1 to max, so curve starts at minimum
             const step = (dist.max - 1) / numPoints;
             for (let i = 0; i <= numPoints; i++) {
                 const x = 1 + i * step;
@@ -547,6 +477,11 @@
                 }
             }
             return data;
+        }
+
+        function destroyCharts() {
+            charts.forEach(chart => chart.destroy());
+            charts = [];
         }
 
         function createCategorySection(categoryData) {
@@ -577,155 +512,128 @@
                 const statsDiv = document.createElement('div');
                 statsDiv.className = 'stats-grid';
 
+                const defaultMean = item.default ? item.default.mean : 'N/A';
+                const pyroMean = item.pyro ? item.pyro.mean : 'N/A';
+                const improvement = item.improvement || 0;
+                const minVal = item.default ? item.default.min : '?';
+
                 statsDiv.innerHTML = `
                     <div class="stat-card">
                         <div class="stat-label">Default Mean</div>
-                        <div class="stat-value">${item.default.mean}</div>
+                        <div class="stat-value">${defaultMean}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Pyro Mean</div>
-                        <div class="stat-value" style="color: #ff6432">${item.pyro.mean}</div>
+                        <div class="stat-value" style="color: #ff6432">${pyroMean}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Improvement</div>
-                        <div class="stat-value" style="color: #00ff88">+${((item.pyro.mean - item.default.mean) / item.default.mean * 100).toFixed(1)}%</div>
+                        <div class="stat-value" style="color: #00ff88">+${improvement}%</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
                             Quality Range
                             <span class="tooltip-icon" title="The low end of this range is theoretical based on normal distribution. It might not be used by the game currently.">?</span>
                         </div>
-                        <div class="stat-value" style="font-size: 1rem">${item.default.min} - 1000</div>
+                        <div class="stat-value" style="font-size: 1rem">${minVal} - 1000</div>
                     </div>
                 `;
 
                 container.appendChild(statsDiv);
                 grid.appendChild(container);
 
-                // Create chart
-                const ctx = canvas.getContext('2d');
-                const defaultData = generateDistributionData(item.default);
-                const pyroData = generateDistributionData(item.pyro);
+                if (item.default && item.pyro) {
+                    const ctx = canvas.getContext('2d');
+                    const defaultData = generateDistributionData(item.default);
+                    const pyroData = generateDistributionData(item.pyro);
 
-                // X-axis always 1-1000
-                const chartMin = 1;
-                const chartMax = 1000;
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: 'Default',
-                                data: defaultData,
-                                borderColor: 'rgba(255, 255, 255, 0.8)',
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 0
-                            },
-                            {
-                                label: 'Pyro',
-                                data: pyroData,
-                                borderColor: 'rgba(255, 100, 50, 0.9)',
-                                backgroundColor: 'rgba(255, 100, 50, 0.15)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 0
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                titleColor: '#00d9ff',
-                                bodyColor: '#fff',
-                                borderColor: 'rgba(0, 217, 255, 0.5)',
-                                borderWidth: 1,
-                                callbacks: {
-                                    title: function (context) {
-                                        if (context && context.length > 0) {
-                                            const quality = Math.round(context[0].parsed.x);
-                                            return `Quality: ${quality}`;
-                                        }
-                                        return '';
-                                    },
-                                    label: function (context) {
-                                        if (context && context.length > 0) {
-                                            const quality = Math.round(context[0].parsed.x);
-                                            let result = `Quality: ${quality}\n`;
-
-                                            // Add probability density for both datasets
-                                            if (context[0].parsed && context[0].parsed.y !== undefined) {
-                                                result += `\nDefault Prob: ${(context[0].parsed.y * 1000).toFixed(4)}`;
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [
+                                {
+                                    label: 'Default',
+                                    data: defaultData,
+                                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 0
+                                },
+                                {
+                                    label: 'Pyro',
+                                    data: pyroData,
+                                    borderColor: 'rgba(255, 100, 50, 0.9)',
+                                    backgroundColor: 'rgba(255, 100, 50, 0.15)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 0
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#00d9ff',
+                                    bodyColor: '#fff',
+                                    borderColor: 'rgba(0, 217, 255, 0.5)',
+                                    borderWidth: 1,
+                                    callbacks: {
+                                        title: function (context) {
+                                            if (context && context.length > 0) {
+                                                return `Quality: ${Math.round(context[0].parsed.x)}`;
                                             }
-                                            if (context[1] && context[1].parsed && context[1].parsed.y !== undefined) {
-                                                result += `\nPyro Prob: ${(context[1].parsed.y * 1000).toFixed(4)}`;
-                                            }
-
-                                            return result;
+                                            return '';
                                         }
-                                        return '';
                                     }
                                 }
                             },
-                            autoColors: false
-                        },
-                        scales: {
-                            x: {
-                                type: 'linear',
-                                min: 1,
-                                max: 1000,
-                                display: true,
-                                title: {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    min: 1,
+                                    max: 1000,
                                     display: true,
-                                    text: 'Quality Level',
-                                    color: '#888',
-                                    font: { family: 'Rajdhani' }
+                                    title: {
+                                        display: true,
+                                        text: 'Quality Level',
+                                        color: '#888',
+                                        font: { family: 'Rajdhani' }
+                                    },
+                                    ticks: { color: '#666', font: { family: 'Rajdhani' } },
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' }
                                 },
-                                ticks: {
-                                    color: '#666',
-                                    font: { family: 'Rajdhani' }
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.05)'
+                                y: {
+                                    beginAtZero: false,
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Probability Density',
+                                        color: '#888',
+                                        font: { family: 'Rajdhani' }
+                                    },
+                                    ticks: { color: '#666', font: { family: 'Rajdhani' } },
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' }
                                 }
                             },
-                            y: {
-                                beginAtZero: false,
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Probability Density',
-                                    color: '#888',
-                                    font: { family: 'Rajdhani' }
-                                },
-                                ticks: {
-                                    color: '#666',
-                                    font: { family: 'Rajdhani' }
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.05)'
-                                }
+                            interaction: {
+                                mode: 'nearest',
+                                axis: 'x',
+                                intersect: false
                             }
-                        },
-                        interaction: {
-                            mode: 'nearest',
-                            axis: 'x',
-                            intersect: false
                         }
-                    }
-                });
+                    });
+
+                    charts.push(chart);
+                }
             });
 
             section.appendChild(grid);
@@ -798,34 +706,121 @@
             return card;
         }
 
-        // Render quality distributions
-        const qualityDistContainer = document.getElementById('quality-distributions');
-        distributions.forEach(category => {
-            qualityDistContainer.appendChild(createCategorySection(category));
-        });
+        async function loadVersion(versionId) {
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Loading data...</div>';
 
-        // Render rock compositions
-        const rarityGrid = document.getElementById('rarity-grid');
-        Object.keys(rockCompositions).forEach(rarity => {
-            rarityGrid.appendChild(createRarityCard(rarity, rockCompositions[rarity]));
-        });
+            try {
+                const [qualityRes, rockRes] = await Promise.all([
+                    fetch(`./data/${versionId}/quality_distributions.json`),
+                    fetch(`./data/${versionId}/rock_compositions.json`)
+                ]);
+
+                const qualityData = await qualityRes.json();
+                const rockData = await rockRes.json();
+
+                renderContent(qualityData, rockData, versionId);
+            } catch (error) {
+                console.error('Error loading version data:', error);
+                content.innerHTML = '<div class="loading">Error loading data. Please try again.</div>';
+            }
+        }
+
+        function renderContent(qualityData, rockData, versionId) {
+            const content = document.getElementById('content');
+            destroyCharts();
+
+            const versionLabel = VERSIONS.find(v => v.id === versionId)?.label || versionId;
+
+            let html = `
+                <div class="info-box">
+                    <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min,
+                    max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000
+                    scale). Pyro system overrides typically offer improved distributions compared to default settings.
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 255, 255, 0.6)"></div>
+                        <span class="legend-label">Default Distribution</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 100, 50, 0.8)"></div>
+                        <span class="legend-label">Pyro Override</span>
+                    </div>
+                </div>
+
+                <div id="quality-distributions"></div>
+
+                <div class="composition-section" id="rock-compositions">
+                    <h2 class="category-title">💎 Rock Composition Ranges</h2>
+                    <div class="info-box">
+                        <strong>Click on any mineral rock</strong> to see its composition breakdown. These ranges show the
+                        minimum and maximum percentage of each mineral that can be found in a rock of that type. Values
+                        represent the percentage composition of the rock's total content.
+                    </div>
+
+                    <div class="rarity-grid" id="rarity-grid"></div>
+                </div>
+
+                <footer style="margin-top: 60px; padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">Unofficial Fan Site</h3>
+                    <p style="color: #888; font-size: 0.9rem; line-height: 1.6; max-width: 800px; margin: 0 auto;">
+                        This site is not endorsed by or affiliated with Cloud Imperium or Roberts Space Industries group of companies.
+                        All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
+                        Star Citizen®, Squadron 42®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of
+                        Cloud Imperium Rights LLC. All rights reserved. This is a community-created tool for informational purposes only.
+                    </p>
+                    <p style="margin-top: 20px; color: #666; font-size: 0.8rem;">
+                        Data sourced from Star Citizen ${versionLabel} patch files
+                    </p>
+                </footer>
+            `;
+
+            content.innerHTML = html;
+
+            const qualityContainer = document.getElementById('quality-distributions');
+
+            const categoryOrder = ['Ship Mineables', 'Harvestables', 'Ground Mineables', 'FPS Mineables', 'Creatures'];
+
+            for (const category of categoryOrder) {
+                const items = qualityData[category];
+                if (items && items.length > 0) {
+                    qualityContainer.appendChild(createCategorySection({ category, items }));
+                }
+            }
+
+            const rarityGrid = document.getElementById('rarity-grid');
+            for (const [rarity, rocks] of Object.entries(rockData)) {
+                if (rocks && rocks.length > 0) {
+                    rarityGrid.appendChild(createRarityCard(rarity, rocks));
+                }
+            }
+        }
+
+        function init() {
+            const select = document.getElementById('version-select');
+
+            select.innerHTML = '';
+
+            VERSIONS.forEach(version => {
+                const option = document.createElement('option');
+                option.value = version.id;
+                option.textContent = version.label;
+                select.appendChild(option);
+            });
+
+            select.value = DEFAULT_VERSION.id;
+
+            select.addEventListener('change', (e) => {
+                loadVersion(e.target.value);
+            });
+
+            loadVersion(DEFAULT_VERSION.id);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
-
-    <footer
-        style="margin-top: 60px; padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.1);">
-        <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">Unofficial Fan Site</h3>
-        <p style="color: #888; font-size: 0.9rem; line-height: 1.6; max-width: 800px; margin: 0 auto;">
-            This site is not endorsed by or affiliated with Cloud Imperium or Roberts Space Industries group of
-            companies.
-            All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
-            Star Citizen®, Squadron 42®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of
-            Cloud Imperium Rights LLC.
-            All rights reserved. This is a community-created tool for informational purposes only.
-        </p>
-        <p style="margin-top: 20px; color: #666; font-size: 0.8rem;">
-            Data sourced from Star Citizen 4.7 patch files
-        </p>
-    </footer>
 </body>
 
 </html>
