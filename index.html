@@ -942,8 +942,11 @@
                                 </div>
                             </div>
                             <div class="yield-note">
-                                <strong>Assumption:</strong> Each 10% yield bonus adds approximately 100 to the mean quality. 
-                                This is an estimate based on current data and may not reflect actual game mechanics.
+                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <span>Mean bonus per 10% yield:</span>
+                                    <input type="number" id="yield-mean-bonus" value="50" min="0" max="500" style="width: 70px; padding: 5px 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 4px; font-family: 'Rajdhani', sans-serif;">
+                                    <span style="color: #888; font-size: 0.85rem;">(This is an assumption - actual game mechanics may differ)</span>
+                                </div>
                             </div>
                         </div>
                         
@@ -1034,6 +1037,7 @@
             
             const checkboxes = document.querySelectorAll('.yield-checkbox');
             const yieldValueEl = document.getElementById('yield-value');
+            const meanBonusInput = document.getElementById('yield-mean-bonus');
             
             function calculateYield() {
                 let yieldPercent = 10; // Base yield
@@ -1058,6 +1062,10 @@
                 cb.addEventListener('change', calculateYield);
             });
             
+            meanBonusInput.addEventListener('input', () => {
+                calculateYield();
+            });
+            
             // Initial calculation
             calculateYield();
         }
@@ -1071,7 +1079,10 @@
             
             const baseYield = 10;
             const yieldBonus = yieldPercent - baseYield;
-            const meanBonus = (yieldBonus / 10) * 100; // Each 10% adds 100 to mean
+            
+            const meanBonusInput = document.getElementById('yield-mean-bonus');
+            const meanBonusPer10 = parseInt(meanBonusInput?.value) || 50;
+            const meanBonus = (yieldBonus / 10) * meanBonusPer10;
             
             // Create modified data with adjusted means
             const adjustedRcd = rcdDataStore.rcd?.map(item => ({
