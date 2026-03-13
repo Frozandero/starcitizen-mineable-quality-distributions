@@ -484,6 +484,24 @@
             charts = [];
         }
 
+        const overrideColors = {
+            default: { border: 'rgba(255, 255, 255, 0.8)', bg: 'rgba(255, 255, 255, 0.1)', label: 'Default' },
+            pyro: { border: 'rgba(255, 100, 50, 0.9)', bg: 'rgba(255, 100, 50, 0.15)', label: 'Pyro' },
+            rcd: { border: 'rgba(50, 150, 255, 0.9)', bg: 'rgba(50, 150, 255, 0.15)', label: 'RCD' },
+            torite: { border: 'rgba(255, 200, 50, 0.9)', bg: 'rgba(255, 200, 50, 0.15)', label: 'Torite' },
+            nyx: { border: 'rgba(200, 50, 255, 0.9)', bg: 'rgba(200, 50, 255, 0.15)', label: 'Nyx' }
+        };
+
+        function getOverrideTypes(item) {
+            const types = [];
+            if (item.default) types.push('default');
+            if (item.pyro) types.push('pyro');
+            if (item.rcd) types.push('rcd');
+            if (item.torite) types.push('torite');
+            if (item.nyx) types.push('nyx');
+            return types.filter(t => t !== 'default');
+        }
+
         function createCategorySection(categoryData) {
             const section = document.createElement('div');
             section.className = 'category-section';
@@ -502,7 +520,14 @@
 
                 const chartTitle = document.createElement('h3');
                 chartTitle.className = 'chart-title';
-                chartTitle.innerHTML = `${item.name} <span class="badge badge-default">Default</span> <span class="badge badge-pyro">Pyro</span>`;
+
+                const overrideTypes = getOverrideTypes(item);
+                let badges = '<span class="badge badge-default">Default</span>';
+                for (const type of overrideTypes) {
+                    const color = overrideColors[type]?.label || type;
+                    badges += ` <span class="badge badge-${type}" style="background: ${overrideColors[type]?.bg || 'rgba(255,255,255,0.1)'}; border: 1px solid ${overrideColors[type]?.border || 'rgba(255,255,255,0.3)'}; color: #fff">${overrideColors[type]?.label || type}</span>`;
+                }
+                chartTitle.innerHTML = `${item.name} ${badges}`;
                 container.appendChild(chartTitle);
 
                 const canvas = document.createElement('canvas');
@@ -512,24 +537,38 @@
                 const statsDiv = document.createElement('div');
                 statsDiv.className = 'stats-grid';
 
-                const defaultMean = item.default ? item.default.mean : 'N/A';
-                const pyroMean = item.pyro ? item.pyro.mean : 'N/A';
-                const improvement = item.improvement || 0;
-                const minVal = item.default ? item.default.min : '?';
+                let statsHtml = '';
 
-                statsDiv.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-label">Default Mean</div>
-                        <div class="stat-value">${defaultMean}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Pyro Mean</div>
-                        <div class="stat-value" style="color: #ff6432">${pyroMean}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Improvement</div>
-                        <div class="stat-value" style="color: #00ff88">+${improvement}%</div>
-                    </div>
+                if (item.default) {
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">Default Mean</div>
+                            <div class="stat-value">${item.default.mean}</div>
+                        </div>
+                    `;
+                }
+
+                for (const type of overrideTypes) {
+                    const color = overrideColors[type]?.border || '#fff';
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">${overrideColors[type]?.label || type} Mean</div>
+                            <div class="stat-value" style="color: ${color}">${item[type].mean}</div>
+                        </div>
+                    `;
+                }
+
+                if (item.improvement) {
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">Improvement</div>
+                            <div class="stat-value" style="color: #00ff88">+${item.improvement}%</div>
+                        </div>
+                    `;
+                }
+
+                const minVal = item.default ? item.default.min : '?';
+                statsHtml += `
                     <div class="stat-card">
                         <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
                             Quality Range
@@ -539,39 +578,49 @@
                     </div>
                 `;
 
+                statsDiv.innerHTML = statsHtml;
+
                 container.appendChild(statsDiv);
                 grid.appendChild(container);
 
-                if (item.default && item.pyro) {
+                const overrideTypesPresent = getOverrideTypes(item);
+                const hasAnyData = (item.default && overrideTypesPresent.length > 0) || overrideTypesPresent.length > 0;
+
+                if (hasAnyData) {
                     const ctx = canvas.getContext('2d');
-                    const defaultData = generateDistributionData(item.default);
-                    const pyroData = generateDistributionData(item.pyro);
+
+                    const datasets = [];
+
+                    if (item.default) {
+                        datasets.push({
+                            label: 'Default',
+                            data: generateDistributionData(item.default),
+                            borderColor: overrideColors.default.border,
+                            backgroundColor: overrideColors.default.bg,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        });
+                    }
+
+                    for (const type of overrideTypesPresent) {
+                        datasets.push({
+                            label: overrideColors[type]?.label || type,
+                            data: generateDistributionData(item[type]),
+                            borderColor: overrideColors[type]?.border || '#fff',
+                            backgroundColor: overrideColors[type]?.bg || 'rgba(255,255,255,0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        });
+                    }
 
                     const chart = new Chart(ctx, {
                         type: 'line',
                         data: {
-                            datasets: [
-                                {
-                                    label: 'Default',
-                                    data: defaultData,
-                                    borderColor: 'rgba(255, 255, 255, 0.8)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 0
-                                },
-                                {
-                                    label: 'Pyro',
-                                    data: pyroData,
-                                    borderColor: 'rgba(255, 100, 50, 0.9)',
-                                    backgroundColor: 'rgba(255, 100, 50, 0.15)',
-                                    borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 0
-                                }
-                            ]
+                            datasets: datasets
                         },
                         options: {
                             responsive: true,
@@ -716,29 +765,26 @@
                     fetch(`./data/${versionId}/rock_compositions.json`)
                 ]);
 
-                const qualityData = await qualityRes.json();
+                const qualityJson = await qualityRes.json();
                 const rockData = await rockRes.json();
 
-                renderContent(qualityData, rockData, versionId);
+                const qualityData = qualityJson.categories || qualityJson;
+                const rockCrackerData = qualityJson.rockCrackerDistributions || null;
+
+                renderContent(qualityData, rockData, rockCrackerData, versionId);
             } catch (error) {
                 console.error('Error loading version data:', error);
                 content.innerHTML = '<div class="loading">Error loading data. Please try again.</div>';
             }
         }
 
-        function renderContent(qualityData, rockData, versionId) {
+        function renderContent(qualityData, rockData, rockCrackerData, versionId) {
             const content = document.getElementById('content');
             destroyCharts();
 
             const versionLabel = VERSIONS.find(v => v.id === versionId)?.label || versionId;
 
-            let html = `
-                <div class="info-box">
-                    <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min,
-                    max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000
-                    scale). Pyro system overrides typically offer improved distributions compared to default settings.
-                </div>
-
+            let legendHtml = `
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color" style="background: rgba(255, 255, 255, 0.6)"></div>
@@ -748,9 +794,55 @@
                         <div class="legend-color" style="background: rgba(255, 100, 50, 0.8)"></div>
                         <span class="legend-label">Pyro Override</span>
                     </div>
+            `;
+
+            if (rockCrackerData && (rockCrackerData.rcd?.length > 0 || rockCrackerData.torite?.length > 0)) {
+                if (rockCrackerData.rcd?.length > 0) {
+                    legendHtml += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(50, 150, 255, 0.8)"></div>
+                            <span class="legend-label">RCD Override</span>
+                        </div>
+                    `;
+                }
+                if (rockCrackerData.torite?.length > 0) {
+                    legendHtml += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(255, 200, 50, 0.8)"></div>
+                            <span class="legend-label">Torite Override</span>
+                        </div>
+                    `;
+                }
+            }
+            legendHtml += `</div>`;
+
+            let rcdSectionHtml = '';
+            if (rockCrackerData && (rockCrackerData.rcd?.length > 0 || rockCrackerData.torite?.length > 0)) {
+                rcdSectionHtml = `
+                    <div class="category-section" id="rock-cracker-distributions">
+                        <h2 class="category-title">⛏️ Rock Cracker Distributions</h2>
+                        <div class="info-box">
+                            <strong>Rock Cracker Distributions (RCD)</strong> - These are special quality distributions for the Rock Cracker Device (RCD) in Nyx. 
+                            RCD applies to non-Torite nodes in RCD locations. Torite Override applies specifically to Torite rocks in RCD locations.
+                            The values shown are averages across all RCD locations in the game. <b>These values are most likely the minimum values for the contract</b>
+                        </div>
+                        <div class="rarity-grid" id="rcd-grid"></div>
+                    </div>
+                `;
+            }
+
+            let html = `
+                <div class="info-box">
+                    <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min,
+                    max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000
+                    scale). Pyro system overrides typically offer improved distributions compared to default settings.
                 </div>
 
+                ${legendHtml}
+
                 <div id="quality-distributions"></div>
+
+                ${rcdSectionHtml}
 
                 <div class="composition-section" id="rock-compositions">
                     <h2 class="category-title">💎 Rock Composition Ranges</h2>
@@ -787,6 +879,17 @@
                 const items = qualityData[category];
                 if (items && items.length > 0) {
                     qualityContainer.appendChild(createCategorySection({ category, items }));
+                }
+            }
+
+            if (rockCrackerData && (rockCrackerData.rcd?.length > 0 || rockCrackerData.torite?.length > 0)) {
+                const rcdGrid = document.getElementById('rcd-grid');
+
+                if (rockCrackerData.rcd?.length > 0) {
+                    rcdGrid.appendChild(createCategorySection({ category: 'RCD (Non-Torite)', items: rockCrackerData.rcd }));
+                }
+                if (rockCrackerData.torite?.length > 0) {
+                    rcdGrid.appendChild(createCategorySection({ category: 'Torite Only', items: rockCrackerData.torite }));
                 }
             }
 

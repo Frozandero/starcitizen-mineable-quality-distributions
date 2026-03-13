@@ -1,140 +1,140 @@
 {
   "Common": [
     {
-      "name": "aluminum",
+      "name": "Aluminium",
       "compositions": [
         {
-          "mineral": "aluminum",
+          "mineral": "Aluminium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "aluminum",
+          "mineral": "Corundum",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "copper",
+      "name": "Copper",
       "compositions": [
         {
-          "mineral": "copper",
+          "mineral": "Copper",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "copper",
+          "mineral": "Tin",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "corundum",
+      "name": "Corundum",
       "compositions": [
         {
-          "mineral": "corundum",
+          "mineral": "Corundum",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "corundum",
+          "mineral": "Aluminium",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "hephaestanite",
+      "name": "Hephaestanite",
       "compositions": [
         {
-          "mineral": "hephaestanite",
+          "mineral": "Hephaestanite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "hephaestanite",
+          "mineral": "Quartz",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "hephaestanite",
+          "mineral": "Silicon",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "iron",
+      "name": "Ice",
       "compositions": [
         {
-          "mineral": "iron",
+          "mineral": "Ice",
           "min": 50,
           "max": 100
         }
       ]
     },
     {
-      "name": "quartz",
+      "name": "Iron",
       "compositions": [
         {
-          "mineral": "quartz",
-          "min": 40,
-          "max": 80
-        },
-        {
-          "mineral": "quartz",
-          "min": 5,
-          "max": 10
-        },
-        {
-          "mineral": "quartz",
-          "min": 5,
-          "max": 10
-        }
-      ]
-    },
-    {
-      "name": "raw ice",
-      "compositions": [
-        {
-          "mineral": "raw ice",
+          "mineral": "Iron",
           "min": 50,
           "max": 100
         }
       ]
     },
     {
-      "name": "raw silicon",
+      "name": "Quartz",
       "compositions": [
         {
-          "mineral": "raw silicon",
+          "mineral": "Quartz",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "raw silicon",
+          "mineral": "Hephaestanite",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "raw silicon",
+          "mineral": "Silicon",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "tin",
+      "name": "Silicon",
       "compositions": [
         {
-          "mineral": "tin",
+          "mineral": "Silicon",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "tin",
+          "mineral": "Hephaestanite",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Quartz",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Tin",
+      "compositions": [
+        {
+          "mineral": "Tin",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Copper",
           "min": 10,
           "max": 20
         }
@@ -143,100 +143,100 @@
   ],
   "Uncommon": [
     {
-      "name": "agricium",
+      "name": "Agricium",
       "compositions": [
         {
-          "mineral": "agricium",
+          "mineral": "Agricium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "agricium",
+          "mineral": "Titanium",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "agricium",
+          "mineral": "Aslarite",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "aslarite",
+      "name": "Aslarite",
       "compositions": [
         {
-          "mineral": "aslarite",
+          "mineral": "Aslarite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "aslarite",
+          "mineral": "Titanium",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "aslarite",
+          "mineral": "Agricium",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "laranite",
+      "name": "Laranite",
       "compositions": [
         {
-          "mineral": "laranite",
+          "mineral": "Laranite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "laranite",
+          "mineral": "Tungsten",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "titanium",
+      "name": "Titanium",
       "compositions": [
         {
-          "mineral": "titanium",
+          "mineral": "Titanium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "titanium",
+          "mineral": "Aslarite",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "titanium",
+          "mineral": "Agricium",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "torite",
+      "name": "Torite",
       "compositions": [
         {
-          "mineral": "torite",
+          "mineral": "Torite",
           "min": 50,
           "max": 100
         }
       ]
     },
     {
-      "name": "tungsten",
+      "name": "Tungsten",
       "compositions": [
         {
-          "mineral": "tungsten",
+          "mineral": "Tungsten",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "tungsten",
+          "mineral": "Laranite",
           "min": 10,
           "max": 20
         }
@@ -245,80 +245,80 @@
   ],
   "Rare": [
     {
-      "name": "beryl",
+      "name": "Beryl",
       "compositions": [
         {
-          "mineral": "beryl",
+          "mineral": "Beryl",
           "min": 50,
           "max": 100
         }
       ]
     },
     {
-      "name": "bexalite",
+      "name": "Bexalite",
       "compositions": [
         {
-          "mineral": "bexalite",
+          "mineral": "Bexalite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "bexalite",
+          "mineral": "Gold",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "bexalite",
+          "mineral": "Borase",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "borase",
+      "name": "Borase",
       "compositions": [
         {
-          "mineral": "borase",
+          "mineral": "Borase",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "borase",
+          "mineral": "Gold",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "borase",
+          "mineral": "Bexalite",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "gold",
+      "name": "Gold",
       "compositions": [
         {
-          "mineral": "gold",
+          "mineral": "Gold",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "gold",
+          "mineral": "Borase",
           "min": 5,
           "max": 10
         },
         {
-          "mineral": "gold",
+          "mineral": "Bexalite",
           "min": 5,
           "max": 10
         }
       ]
     },
     {
-      "name": "taranite",
+      "name": "Taranite",
       "compositions": [
         {
-          "mineral": "taranite",
+          "mineral": "Taranite",
           "min": 50,
           "max": 100
         }
@@ -327,45 +327,45 @@
   ],
   "Epic": [
     {
-      "name": "lindinium",
+      "name": "Lindinium",
       "compositions": [
         {
-          "mineral": "lindinium",
+          "mineral": "Lindinium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "lindinium",
+          "mineral": "Tungsten",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "ouratite",
+      "name": "Ouratite",
       "compositions": [
         {
-          "mineral": "ouratite",
+          "mineral": "Ouratite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "ouratite",
+          "mineral": "Agricium",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "riccite",
+      "name": "Riccite",
       "compositions": [
         {
-          "mineral": "riccite",
+          "mineral": "Riccite",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "riccite",
+          "mineral": "Laranite",
           "min": 10,
           "max": 20
         }
@@ -374,45 +374,45 @@
   ],
   "Legendary": [
     {
-      "name": "quantainium",
+      "name": "Quantainium",
       "compositions": [
         {
-          "mineral": "quantainium",
+          "mineral": "Quantainium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "quantainium",
+          "mineral": "Beryl",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "savrilium",
+      "name": "Savrilium",
       "compositions": [
         {
-          "mineral": "savrilium",
+          "mineral": "Savrilium",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "savrilium",
+          "mineral": "Gold",
           "min": 10,
           "max": 20
         }
       ]
     },
     {
-      "name": "stileron",
+      "name": "Sileron",
       "compositions": [
         {
-          "mineral": "stileron",
+          "mineral": "Sileron",
           "min": 40,
           "max": 80
         },
         {
-          "mineral": "stileron",
+          "mineral": "Taranite",
           "min": 10,
           "max": 20
         }
