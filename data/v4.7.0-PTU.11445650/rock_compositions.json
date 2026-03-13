@@ -418,5 +418,22 @@
         }
       ]
     }
+  ],
+  "RCD": [
+    {
+      "name": "Savrilium",
+      "compositions": [
+        {
+          "mineral": "Savrilium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Torite",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
   ]
 }
