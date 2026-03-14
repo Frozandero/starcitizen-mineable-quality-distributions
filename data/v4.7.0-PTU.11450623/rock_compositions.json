@@ -1,0 +1,439 @@
+{
+  "Common": [
+    {
+      "name": "Aluminium",
+      "compositions": [
+        {
+          "mineral": "Aluminium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Corundum",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Copper",
+      "compositions": [
+        {
+          "mineral": "Copper",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Tin",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Corundum",
+      "compositions": [
+        {
+          "mineral": "Corundum",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Aluminium",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Hephaestanite",
+      "compositions": [
+        {
+          "mineral": "Hephaestanite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Quartz",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Silicon",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Ice",
+      "compositions": [
+        {
+          "mineral": "Ice",
+          "min": 50,
+          "max": 100
+        }
+      ]
+    },
+    {
+      "name": "Iron",
+      "compositions": [
+        {
+          "mineral": "Iron",
+          "min": 50,
+          "max": 100
+        }
+      ]
+    },
+    {
+      "name": "Quartz",
+      "compositions": [
+        {
+          "mineral": "Quartz",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Hephaestanite",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Silicon",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Silicon",
+      "compositions": [
+        {
+          "mineral": "Silicon",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Hephaestanite",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Quartz",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Tin",
+      "compositions": [
+        {
+          "mineral": "Tin",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Copper",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
+  ],
+  "Uncommon": [
+    {
+      "name": "Agricium",
+      "compositions": [
+        {
+          "mineral": "Agricium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Titanium",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Aslarite",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Aslarite",
+      "compositions": [
+        {
+          "mineral": "Aslarite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Titanium",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Agricium",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Laranite",
+      "compositions": [
+        {
+          "mineral": "Laranite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Tungsten",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Titanium",
+      "compositions": [
+        {
+          "mineral": "Titanium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Aslarite",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Agricium",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Torite",
+      "compositions": [
+        {
+          "mineral": "Torite",
+          "min": 50,
+          "max": 100
+        }
+      ]
+    },
+    {
+      "name": "Tungsten",
+      "compositions": [
+        {
+          "mineral": "Tungsten",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Laranite",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
+  ],
+  "Rare": [
+    {
+      "name": "Beryl",
+      "compositions": [
+        {
+          "mineral": "Beryl",
+          "min": 50,
+          "max": 100
+        }
+      ]
+    },
+    {
+      "name": "Bexalite",
+      "compositions": [
+        {
+          "mineral": "Bexalite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Gold",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Borase",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Borase",
+      "compositions": [
+        {
+          "mineral": "Borase",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Gold",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Bexalite",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Gold",
+      "compositions": [
+        {
+          "mineral": "Gold",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Borase",
+          "min": 5,
+          "max": 10
+        },
+        {
+          "mineral": "Bexalite",
+          "min": 5,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "name": "Taranite",
+      "compositions": [
+        {
+          "mineral": "Taranite",
+          "min": 50,
+          "max": 100
+        }
+      ]
+    }
+  ],
+  "Epic": [
+    {
+      "name": "Lindinium",
+      "compositions": [
+        {
+          "mineral": "Lindinium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Tungsten",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Ouratite",
+      "compositions": [
+        {
+          "mineral": "Ouratite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Agricium",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Riccite",
+      "compositions": [
+        {
+          "mineral": "Riccite",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Laranite",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
+  ],
+  "Legendary": [
+    {
+      "name": "Quantainium",
+      "compositions": [
+        {
+          "mineral": "Quantainium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Beryl",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Savrilium",
+      "compositions": [
+        {
+          "mineral": "Savrilium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Gold",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "Sileron",
+      "compositions": [
+        {
+          "mineral": "Sileron",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Taranite",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
+  ],
+  "RCD": [
+    {
+      "name": "Savrilium",
+      "compositions": [
+        {
+          "mineral": "Savrilium",
+          "min": 40,
+          "max": 80
+        },
+        {
+          "mineral": "Torite",
+          "min": 10,
+          "max": 20
+        }
+      ]
+    }
+  ]
+}
