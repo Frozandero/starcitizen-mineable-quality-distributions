@@ -301,92 +301,6 @@
             border-color: #3296ff;
         }
 
-        .yield-controls {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(50, 150, 255, 0.3);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .yield-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .yield-title {
-            font-family: 'Orbitron', sans-serif;
-            color: #3296ff;
-            font-size: 1.1rem;
-        }
-
-        .yield-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: #00ff88;
-        }
-
-        .yield-sections {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .yield-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .yield-section-label {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        .yield-checkboxes {
-            display: flex;
-            gap: 10px;
-        }
-
-        .yield-checkbox {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .yield-checkbox:checked {
-            background: rgba(50, 150, 255, 0.3);
-            border-color: #3296ff;
-        }
-
-        .yield-checkbox:checked::after {
-            content: '✓';
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #3296ff;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .yield-note {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: #ffc107;
-        }
-
         .rock-list {
             list-style: none;
         }
@@ -557,14 +471,54 @@
             return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
         }
 
-        function generateDistributionData(dist, numPoints = 200) {
+        // Error function approximation
+        function erf(x) {
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+
+            const sign = x < 0 ? -1 : 1;
+            x = Math.abs(x);
+
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+            return sign * y;
+        }
+
+        // Cumulative distribution function (CDF)
+        function normalDistributionCDF(x, mean, stddev) {
+            return 0.5 * (1 + erf((x - mean) / (stddev * Math.sqrt(2))));
+        }
+
+        // Probability that X > x
+        function probabilityGreaterThan(x, mean, stddev, maxVal) {
+            // For bounded distributions, we need to account for the bounds
+            // P(X > x) = P(X > x) / P(X >= min) where min is the lower bound
+            const zScore = (x - mean) / stddev;
+            const probGreaterThan = 1 - normalDistributionCDF(x, mean, stddev);
+            
+            // Account for the min bound - probability that X >= min
+            const minVal = Math.max(1, mean - 3 * stddev); // Use 3 sigma as effective lower bound
+            const probAboveMin = 1 - normalDistributionCDF(minVal, mean, stddev);
+            
+            // Normalize and ensure we don't go below 0 or above 1
+            let normalizedProb = probGreaterThan / probAboveMin;
+            normalizedProb = Math.max(0, Math.min(1, normalizedProb));
+            
+            return normalizedProb;
+        }
+
+        function generateDistributionData(dist) {
             const data = [];
-            const step = (dist.max - 1) / numPoints;
-            for (let i = 0; i <= numPoints; i++) {
-                const x = 1 + i * step;
+            // Generate 1 by 1 for every quality level from 1 to 1000
+            for (let x = 1; x <= dist.max; x++) {
                 if (x >= 1 && x <= dist.max) {
                     const y = normalDistributionPDF(x, dist.mean, dist.stddev);
-                    data.push({ x: Math.round(x), y: parseFloat(y.toFixed(6)) });
+                    data.push({ x: x, y: parseFloat(y.toFixed(6)) });
                 }
             }
             return data;
@@ -691,7 +645,8 @@
                             borderWidth: 2,
                             fill: true,
                             tension: 0.4,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            customData: item.default
                         });
                     }
 
@@ -704,7 +659,8 @@
                             borderWidth: 2,
                             fill: true,
                             tension: 0.4,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            customData: item[type]
                         });
                     }
 
@@ -732,6 +688,23 @@
                                                 return `Quality: ${Math.round(context[0].parsed.x)}`;
                                             }
                                             return '';
+                                        },
+                                        label: function (context) {
+                                            if (!context || !context.dataset) return '';
+                                            
+                                            const distName = context.dataset.label;
+                                            const qualityValue = context.parsed.x;
+                                            const densityValue = context.parsed.y;
+                                            
+                                            // Calculate P(x > qualityValue) if we have distribution info
+                                            const dist = context.dataset.customData;
+                                            let probText = '';
+                                            if (dist) {
+                                                const prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
+                                                probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(2)}%`;
+                                            }
+                                            
+                                            return `${distName}: ${densityValue.toFixed(6)}${probText}`;
                                         }
                                     }
                                 }
@@ -912,42 +885,10 @@
                 rcdSectionHtml = `
                     <div class="category-section" id="rock-cracker-distributions">
                         <h2 class="category-title">⛏️ Rock Cracker Distributions</h2>
-                        <div class="info-box">
+                            <div class="info-box">
                             <strong>Rock Cracker Distributions (RCD)</strong> - These are special quality distributions for the Rock Cracker Device (RCD) in Nyx. 
                             RCD applies to non-Torite nodes in RCD locations. Torite Override applies specifically to Torite rocks in RCD locations.
-                            The values shown are averages across all RCD locations in the game. <b>These values are most likely the minimum values for the contract</b>
-                        </div>
-                        
-                        <div class="yield-controls">
-                            <div class="yield-header">
-                                <span class="yield-title">Yield Bonus</span>
-                                <span class="yield-value" id="yield-value">10%</span>
-                            </div>
-                            <div class="yield-sections">
-                                <div class="yield-section">
-                                    <span class="yield-section-label">Lenses (+10% each)</span>
-                                    <div class="yield-checkboxes">
-                                        <input type="checkbox" class="yield-checkbox" id="lens1" data-type="lens">
-                                        <input type="checkbox" class="yield-checkbox" id="lens2" data-type="lens">
-                                        <input type="checkbox" class="yield-checkbox" id="lens3" data-type="lens">
-                                    </div>
-                                </div>
-                                <div class="yield-section">
-                                    <span class="yield-section-label">Refractors (+20% each)</span>
-                                    <div class="yield-checkboxes">
-                                        <input type="checkbox" class="yield-checkbox" id="refractor1" data-type="refractor">
-                                        <input type="checkbox" class="yield-checkbox" id="refractor2" data-type="refractor">
-                                        <input type="checkbox" class="yield-checkbox" id="refractor3" data-type="refractor">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="yield-note">
-                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                    <span>Mean bonus per 10% yield:</span>
-                                    <input type="number" id="yield-mean-bonus" value="50" min="0" max="500" style="width: 70px; padding: 5px 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 4px; font-family: 'Rajdhani', sans-serif;">
-                                    <span style="color: #888; font-size: 0.85rem;">(This is an assumption - actual game mechanics may differ)</span>
-                                </div>
-                            </div>
+                            The values shown are averages across all RCD locations in the game.
                         </div>
                         
                         <div class="rarity-grid" id="rcd-grid"></div>
@@ -1022,90 +963,6 @@
                 if (rocks && rocks.length > 0) {
                     rarityGrid.appendChild(createRarityCard(rarity, rocks));
                 }
-            }
-
-            // Setup yield controls for RCD section
-            if (rockCrackerData && (rockCrackerData.rcd?.length > 0 || rockCrackerData.torite?.length > 0)) {
-                setupYieldControls(rockCrackerData);
-            }
-        }
-
-        let rcdDataStore = null;
-
-        function setupYieldControls(rockCrackerData) {
-            rcdDataStore = rockCrackerData;
-            
-            const checkboxes = document.querySelectorAll('.yield-checkbox');
-            const yieldValueEl = document.getElementById('yield-value');
-            const meanBonusInput = document.getElementById('yield-mean-bonus');
-            
-            function calculateYield() {
-                let yieldPercent = 10; // Base yield
-                
-                const lensCheckboxes = document.querySelectorAll('#lens1, #lens2, #lens3');
-                const refractorCheckboxes = document.querySelectorAll('#refractor1, #refractor2, #refractor3');
-                
-                lensCheckboxes.forEach(cb => {
-                    if (cb.checked) yieldPercent += 10;
-                });
-                
-                refractorCheckboxes.forEach(cb => {
-                    if (cb.checked) yieldPercent += 20;
-                });
-                
-                yieldValueEl.textContent = yieldPercent + '%';
-                
-                updateRcdCharts(yieldPercent);
-            }
-            
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', calculateYield);
-            });
-            
-            meanBonusInput.addEventListener('input', () => {
-                calculateYield();
-            });
-            
-            // Initial calculation
-            calculateYield();
-        }
-
-        function updateRcdCharts(yieldPercent) {
-            if (!rcdDataStore) return;
-            
-            // Remove old RCD charts
-            const rcdGrid = document.getElementById('rcd-grid');
-            rcdGrid.innerHTML = '';
-            
-            const baseYield = 10;
-            const yieldBonus = yieldPercent - baseYield;
-            
-            const meanBonusInput = document.getElementById('yield-mean-bonus');
-            const meanBonusPer10 = parseInt(meanBonusInput?.value) || 50;
-            const meanBonus = (yieldBonus / 10) * meanBonusPer10;
-            
-            // Create modified data with adjusted means
-            const adjustedRcd = rcdDataStore.rcd?.map(item => ({
-                ...item,
-                rcd: item.rcd ? {
-                    ...item.rcd,
-                    mean: Math.min(item.rcd.mean + meanBonus, 1000)
-                } : null
-            })) || [];
-            
-            const adjustedTorite = rcdDataStore.torite?.map(item => ({
-                ...item,
-                torite: item.torite ? {
-                    ...item.torite,
-                    mean: Math.min(item.torite.mean + meanBonus, 1000)
-                } : null
-            })) || [];
-            
-            if (adjustedRcd.length > 0) {
-                rcdGrid.appendChild(createCategorySection({ category: 'RCD (Non-Torite)', items: adjustedRcd }));
-            }
-            if (adjustedTorite.length > 0) {
-                rcdGrid.appendChild(createCategorySection({ category: 'Torite Only', items: adjustedTorite }));
             }
         }
 
