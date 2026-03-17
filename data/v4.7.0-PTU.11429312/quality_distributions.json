@@ -90,6 +90,38 @@
         "improvement": "20.0"
       },
       {
+        "name": "Uncommon",
+        "default": {
+          "mean": 139,
+          "min": 255,
+          "max": 1000,
+          "stddev": 270
+        },
+        "pyro": {
+          "mean": 167,
+          "min": 255,
+          "max": 1000,
+          "stddev": 270
+        },
+        "improvement": "20.1"
+      },
+      {
+        "name": "Rare",
+        "default": {
+          "mean": 164,
+          "min": 303,
+          "max": 1000,
+          "stddev": 275
+        },
+        "pyro": {
+          "mean": 196,
+          "min": 303,
+          "max": 1000,
+          "stddev": 275
+        },
+        "improvement": "19.5"
+      },
+      {
         "name": "Epic",
         "default": {
           "mean": 194,
@@ -120,38 +152,6 @@
           "stddev": 294
         },
         "improvement": "22.0"
-      },
-      {
-        "name": "Rare",
-        "default": {
-          "mean": 164,
-          "min": 303,
-          "max": 1000,
-          "stddev": 275
-        },
-        "pyro": {
-          "mean": 196,
-          "min": 303,
-          "max": 1000,
-          "stddev": 275
-        },
-        "improvement": "19.5"
-      },
-      {
-        "name": "Uncommon",
-        "default": {
-          "mean": 139,
-          "min": 255,
-          "max": 1000,
-          "stddev": 270
-        },
-        "pyro": {
-          "mean": 167,
-          "min": 255,
-          "max": 1000,
-          "stddev": 270
-        },
-        "improvement": "20.1"
       }
     ]
   },

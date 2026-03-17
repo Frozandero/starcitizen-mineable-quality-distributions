@@ -22,18 +22,18 @@
       {
         "name": "FPS Mineable",
         "default": {
-          "mean": 311,
+          "mean": 201,
           "min": 201,
           "max": 1000,
-          "stddev": 337
+          "stddev": 298
         },
         "pyro": {
-          "mean": 334,
+          "mean": 209,
           "min": 201,
           "max": 1000,
-          "stddev": 352
+          "stddev": 308
         },
-        "improvement": "7.4"
+        "improvement": "4.0"
       }
     ],
     "Ground Mineables": [

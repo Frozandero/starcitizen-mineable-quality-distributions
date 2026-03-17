@@ -452,8 +452,8 @@
     </div>
 
     <script>
-        const VERSIONS = [{"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"},{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"},{"id":"v4.7.0-PTU.11429312","label":"v4.7.0 PTU 11429312","path":"data/v4.7.0-PTU.11429312"}];
-        const DEFAULT_VERSION = {"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"};
+        const VERSIONS = [{"id":"v4.7.0-PTU.11458882","label":"v4.7.0 PTU 11458882","path":"data/v4.7.0-PTU.11458882"},{"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"},{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"},{"id":"v4.7.0-PTU.11429312","label":"v4.7.0 PTU 11429312","path":"data/v4.7.0-PTU.11429312"}];
+        const DEFAULT_VERSION = {"id":"v4.7.0-PTU.11458882","label":"v4.7.0 PTU 11458882","path":"data/v4.7.0-PTU.11458882"};
 
         const rarityColors = {
             Common: '#ffffff',
@@ -500,15 +500,15 @@
             // P(X > x) = P(X > x) / P(X >= min) where min is the lower bound
             const zScore = (x - mean) / stddev;
             const probGreaterThan = 1 - normalDistributionCDF(x, mean, stddev);
-            
+
             // Account for the min bound - probability that X >= min
             const minVal = Math.max(1, mean - 3 * stddev); // Use 3 sigma as effective lower bound
             const probAboveMin = 1 - normalDistributionCDF(minVal, mean, stddev);
-            
+
             // Normalize and ensure we don't go below 0 or above 1
             let normalizedProb = probGreaterThan / probAboveMin;
             normalizedProb = Math.max(0, Math.min(1, normalizedProb));
-            
+
             return normalizedProb;
         }
 
@@ -691,11 +691,11 @@
                                         },
                                         label: function (context) {
                                             if (!context || !context.dataset) return '';
-                                            
+
                                             const distName = context.dataset.label;
                                             const qualityValue = context.parsed.x;
                                             const densityValue = context.parsed.y;
-                                            
+
                                             // Calculate P(x > qualityValue) if we have distribution info
                                             const dist = context.dataset.customData;
                                             let probText = '';
@@ -703,7 +703,7 @@
                                                 const prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
                                                 probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(2)}%`;
                                             }
-                                            
+
                                             return `${distName}: ${densityValue.toFixed(6)}${probText}`;
                                         }
                                     }
