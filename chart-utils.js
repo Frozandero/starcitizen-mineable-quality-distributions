@@ -188,7 +188,10 @@ function calculateDelta(valueA, valueB) {
 
 // Determine verdict based on mean and stddev changes
 function calculateVerdict(meanDelta, stddevDelta) {
-    if (meanDelta.percent > 5 && Math.abs(stddevDelta.percent) < 10) {
+    // Check if unchanged (both values very close to 0)
+    if (Math.abs(meanDelta.percent) < 0.1 && Math.abs(stddevDelta.percent) < 0.1) {
+        return { label: 'Unchanged', class: 'verdict-unchanged', icon: '=' };
+    } else if (meanDelta.percent > 5 && Math.abs(stddevDelta.percent) < 10) {
         return { label: 'Improved', class: 'verdict-improved', icon: '✓' };
     } else if (meanDelta.percent < -5) {
         return { label: 'Worsened', class: 'verdict-worsened', icon: '✗' };

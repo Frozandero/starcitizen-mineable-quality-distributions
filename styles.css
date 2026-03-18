@@ -508,6 +508,12 @@ h1 {
     border: 1px solid rgba(255, 170, 0, 0.5);
 }
 
+.verdict-unchanged {
+    background: rgba(136, 136, 136, 0.2);
+    color: #888;
+    border: 1px solid rgba(136, 136, 136, 0.5);
+}
+
 .version-badge {
     display: inline-block;
     padding: 4px 10px;
