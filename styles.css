@@ -426,10 +426,11 @@ h1 {
     gap: 15px;
 }
 
-.vs-label {
+.version-arrow {
     color: #888;
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 #version-select-a, #version-select-b {

@@ -228,7 +228,6 @@ function createComparisonSummaryTable(qualityDataA, qualityDataB, versionALabel,
             <th>Item</th>
             <th>Mean Delta</th>
             <th>StdDev Delta</th>
-            <th>Verdict</th>
         </tr>
     `;
     table.appendChild(thead);
@@ -259,7 +258,6 @@ function createComparisonSummaryTable(qualityDataA, qualityDataB, versionALabel,
                 <td class="${defaultStddevDelta.positive ? 'delta-positive' : defaultStddevDelta.negative ? 'delta-negative' : 'delta-neutral'}">
                     ${formatDelta(defaultStddevDelta)}
                 </td>
-                <td><span class="verdict-badge ${verdict.class}">${verdict.icon} ${verdict.label}</span></td>
             `;
             tbody.appendChild(row);
         }
@@ -283,15 +281,13 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
 
     const chartTitle = document.createElement('h3');
     chartTitle.className = 'chart-title';
-    
+
     const meanDelta = calculateDelta(itemA.default.mean, itemB.default.mean);
     const stddevDelta = calculateDelta(itemA.default.stddev, itemB.default.stddev);
-    const verdict = calculateVerdict(meanDelta, stddevDelta);
 
     chartTitle.innerHTML = `${itemA.name} 
         <span class="version-badge version-badge-a">${versionALabel}</span>
-        <span class="version-badge version-badge-b">${versionBLabel}</span>
-        <span class="verdict-badge ${verdict.class}">${verdict.icon} ${verdict.label}</span>`;
+        <span class="version-badge version-badge-b">${versionBLabel}</span>`;
     container.appendChild(chartTitle);
 
     const canvas = document.createElement('canvas');

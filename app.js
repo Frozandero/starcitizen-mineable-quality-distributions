@@ -58,6 +58,15 @@ async function loadComparison(versionIdA, versionIdB) {
     const content = document.getElementById('content');
     content.innerHTML = '<div class="loading">Loading comparison data...</div>';
 
+    // Debug logging
+    console.log('loadComparison called with:', { versionIdA, versionIdB, viewMode });
+
+    if (!versionIdA || !versionIdB) {
+        console.error('Missing version IDs:', { versionIdA, versionIdB });
+        content.innerHTML = '<div class="loading">Error: Please select both versions to compare.</div>';
+        return;
+    }
+
     try {
         const [qualityResA, rockResA, qualityResB, rockResB] = await Promise.all([
             fetch(`./data/${versionIdA}/quality_distributions.json`),
@@ -65,6 +74,10 @@ async function loadComparison(versionIdA, versionIdB) {
             fetch(`./data/${versionIdB}/quality_distributions.json`),
             fetch(`./data/${versionIdB}/rock_compositions.json`)
         ]);
+
+        if (!qualityResA.ok || !qualityResB.ok) {
+            throw new Error(`Failed to fetch quality distributions for ${versionIdA} or ${versionIdB}`);
+        }
 
         const qualityJsonA = await qualityResA.json();
         const rockDataA = await rockResA.json();
@@ -74,13 +87,15 @@ async function loadComparison(versionIdA, versionIdB) {
         const qualityDataA = qualityJsonA.categories || qualityJsonA;
         const qualityDataB = qualityJsonB.categories || qualityJsonB;
 
+        console.log('Comparison data loaded successfully:', { versionIdA, versionIdB });
+
         versionA = versionIdA;
         versionB = versionIdB;
 
         renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockDataB, versionIdA, versionIdB);
     } catch (error) {
         console.error('Error loading comparison data:', error);
-        content.innerHTML = '<div class="loading">Error loading comparison data. Please try again.</div>';
+        content.innerHTML = `<div class="loading">Error loading comparison data: ${error.message}. Please try again.</div>`;
     }
 }
 
@@ -326,6 +341,7 @@ function init() {
         currentVersion = VERSIONS[0].id;
         versionA = versionSelectA.value;
         versionB = versionSelectB.value;
+        console.log('Initialized with:', { currentVersion, versionA, versionB });
     }
 
     // Event listeners
