@@ -13,7 +13,8 @@ const overrideColors = {
     pyro: { border: 'rgba(255, 100, 50, 0.9)', bg: 'rgba(255, 100, 50, 0.15)', label: 'Pyro' },
     rcd: { border: 'rgba(50, 150, 255, 0.9)', bg: 'rgba(50, 150, 255, 0.15)', label: 'RCD' },
     torite: { border: 'rgba(255, 200, 50, 0.9)', bg: 'rgba(255, 200, 50, 0.15)', label: 'Torite' },
-    nyx: { border: 'rgba(200, 50, 255, 0.9)', bg: 'rgba(200, 50, 255, 0.15)', label: 'Nyx' }
+    nyx: { border: 'rgba(200, 50, 255, 0.9)', bg: 'rgba(200, 50, 255, 0.15)', label: 'Nyx' },
+    carinite: { border: 'rgba(255, 100, 200, 0.9)', bg: 'rgba(255, 100, 200, 0.15)', label: 'Carinite' }
 };
 
 const versionColors = {
@@ -84,6 +85,7 @@ function getOverrideTypes(item) {
     if (item.rcd) types.push('rcd');
     if (item.torite) types.push('torite');
     if (item.nyx) types.push('nyx');
+    if (item.carinite) types.push('carinite');
     return types.filter(t => t !== 'default');
 }
 

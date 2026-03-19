@@ -6,12 +6,14 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 100
+          "max": 100,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 5,
-          "max": 20
+          "max": 20,
+          "qualityScale": 1
         }
       ]
     }
@@ -23,17 +25,20 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 100
+          "max": 100,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 5,
-          "max": 20
+          "max": 20,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 5,
-          "max": 10
+          "max": 10,
+          "qualityScale": 1
         }
       ]
     }
@@ -45,7 +50,8 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 100
+          "max": 100,
+          "qualityScale": 1
         }
       ]
     }
@@ -57,12 +63,14 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 80
+          "max": 80,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 10,
-          "max": 20
+          "max": 20,
+          "qualityScale": 1
         }
       ]
     }
@@ -74,12 +82,14 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 80
+          "max": 80,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 10,
-          "max": 20
+          "max": 20,
+          "qualityScale": 1
         }
       ]
     }
@@ -91,12 +101,14 @@
         {
           "mineral": "Unknown",
           "min": 40,
-          "max": 80
+          "max": 80,
+          "qualityScale": 1
         },
         {
           "mineral": "Unknown",
           "min": 10,
-          "max": 20
+          "max": 20,
+          "qualityScale": 1
         }
       ]
     }

@@ -21,19 +21,25 @@
     "FPS Mineables": [
       {
         "name": "FPS Mineable",
-        "default": {
-          "mean": 297,
-          "min": 1,
+        "carinite": {
+          "mean": 203,
+          "min": 501,
           "max": 1000,
-          "stddev": 256
+          "stddev": 270
+        },
+        "default": {
+          "mean": 201,
+          "min": 201,
+          "max": 1000,
+          "stddev": 298
         },
         "pyro": {
-          "mean": 324,
-          "min": 1,
+          "mean": 209,
+          "min": 201,
           "max": 1000,
-          "stddev": 256
+          "stddev": 308
         },
-        "improvement": "9.1"
+        "improvement": "4.0"
       }
     ],
     "Ground Mineables": [
@@ -76,84 +82,109 @@
       {
         "name": "Common",
         "default": {
-          "mean": 130,
-          "min": 201,
+          "mean": 105,
+          "min": 501,
           "max": 1000,
-          "stddev": 265
+          "stddev": 209
         },
         "pyro": {
-          "mean": 156,
-          "min": 201,
+          "mean": 104,
+          "min": 501,
           "max": 1000,
-          "stddev": 365
+          "stddev": 214
         },
-        "improvement": "20.0"
+        "improvement": "-1.0"
       },
       {
         "name": "Uncommon",
         "default": {
-          "mean": 139,
-          "min": 255,
+          "mean": 108,
+          "min": 501,
           "max": 1000,
-          "stddev": 270
+          "stddev": 215
         },
         "pyro": {
-          "mean": 167,
-          "min": 255,
+          "mean": 109,
+          "min": 501,
           "max": 1000,
-          "stddev": 270
+          "stddev": 220
         },
-        "improvement": "20.1"
+        "improvement": "0.9"
       },
       {
         "name": "Rare",
         "default": {
-          "mean": 164,
-          "min": 303,
+          "mean": 113,
+          "min": 501,
           "max": 1000,
-          "stddev": 275
+          "stddev": 224
         },
         "pyro": {
-          "mean": 196,
-          "min": 303,
+          "mean": 113,
+          "min": 501,
           "max": 1000,
-          "stddev": 275
+          "stddev": 230
         },
-        "improvement": "19.5"
+        "improvement": "0.0"
       },
       {
         "name": "Epic",
         "default": {
-          "mean": 194,
-          "min": 359,
+          "mean": 118,
+          "min": 501,
           "max": 1000,
-          "stddev": 289
+          "stddev": 241
         },
         "pyro": {
-          "mean": 233,
-          "min": 359,
+          "mean": 116,
+          "min": 501,
           "max": 1000,
-          "stddev": 286
+          "stddev": 249
         },
-        "improvement": "20.1"
+        "improvement": "-1.7"
       },
       {
         "name": "Legendary",
         "default": {
-          "mean": 200,
-          "min": 404,
+          "mean": 121,
+          "min": 501,
           "max": 1000,
-          "stddev": 294
+          "stddev": 248
         },
         "pyro": {
-          "mean": 244,
-          "min": 404,
+          "mean": 123,
+          "min": 501,
           "max": 1000,
-          "stddev": 294
+          "stddev": 256
         },
-        "improvement": "22.0"
+        "improvement": "1.7"
       }
     ]
   },
-  "rockCrackerDistributions": null
+  "rockCrackerDistributions": {
+    "rcd": [
+      {
+        "name": "Legendary",
+        "rcd": {
+          "mean": 103,
+          "min": 501,
+          "max": 1000,
+          "stddev": 213
+        },
+        "improvement": 0
+      }
+    ],
+    "torite": [
+      {
+        "name": "Uncommon",
+        "torite": {
+          "mean": 137,
+          "min": 414,
+          "max": 1000,
+          "stddev": 257
+        },
+        "improvement": 0
+      }
+    ]
+  }
 }

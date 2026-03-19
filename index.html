@@ -11,33 +11,33 @@
 
 <body>
     <div class="container">
-    <div class="header">
-        <h1>STAR CITIZEN</h1>
-        <p class="subtitle">Quality Distribution Analysis - Pyro System vs Default</p>
+        <div class="header">
+            <h1>STAR CITIZEN</h1>
+            <p class="subtitle">Quality Distribution Analysis - Pyro System vs Default</p>
 
-        <div class="mode-toggle">
-            <button id="single-mode-btn" class="mode-btn active">Single View</button>
-            <button id="compare-mode-btn" class="mode-btn">Compare Versions</button>
-        </div>
+            <div class="mode-toggle">
+                <button id="single-mode-btn" class="mode-btn active">Single View</button>
+                <button id="compare-mode-btn" class="mode-btn">Compare Versions</button>
+            </div>
 
-        <div class="version-selector" id="single-version-selector">
-            <span class="version-label">VERSION:</span>
-            <select id="version-select">
-                <option value="">Loading versions...</option>
-            </select>
-        </div>
+            <div class="version-selector" id="single-version-selector">
+                <span class="version-label">VERSION:</span>
+                <select id="version-select">
+                    <option value="">Loading versions...</option>
+                </select>
+            </div>
 
-        <div class="compare-selector" id="compare-version-selector" style="display: none;">
-            <span class="version-label">COMPARE:</span>
-            <select id="version-select-a">
-                <option value="">Loading versions...</option>
-            </select>
-            <span class="version-arrow">→</span>
-            <select id="version-select-b">
-                <option value="">Loading versions...</option>
-            </select>
+            <div class="compare-selector" id="compare-version-selector" style="display: none;">
+                <span class="version-label">COMPARE:</span>
+                <select id="version-select-a">
+                    <option value="">Loading versions...</option>
+                </select>
+                <span class="version-arrow">→</span>
+                <select id="version-select-b">
+                    <option value="">Loading versions...</option>
+                </select>
+            </div>
         </div>
-    </div>
 
         <div id="content">
             <div class="loading">Loading data...</div>
@@ -45,8 +45,8 @@
     </div>
 
     <script>
-        const VERSIONS = [{"id":"v4.7.0-PTU.11468334","label":"v4.7.0 PTU 11468334","path":"data/v4.7.0-PTU.11468334"},{"id":"v4.7.0-PTU.11458882","label":"v4.7.0 PTU 11458882","path":"data/v4.7.0-PTU.11458882"},{"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"},{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"},{"id":"v4.7.0-PTU.11429312","label":"v4.7.0 PTU 11429312","path":"data/v4.7.0-PTU.11429312"}];
-        const DEFAULT_VERSION = {"id":"v4.7.0-PTU.11468334","label":"v4.7.0 PTU 11468334","path":"data/v4.7.0-PTU.11468334"};
+        const VERSIONS = [{"id":"v4.7.0-PTU.11475995","label":"v4.7.0 PTU 11475995","path":"data/v4.7.0-PTU.11475995"},{"id":"v4.7.0-PTU.11468334","label":"v4.7.0 PTU 11468334","path":"data/v4.7.0-PTU.11468334"},{"id":"v4.7.0-PTU.11458882","label":"v4.7.0 PTU 11458882","path":"data/v4.7.0-PTU.11458882"},{"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"},{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"}];
+        const DEFAULT_VERSION = {"id":"v4.7.0-PTU.11475995","label":"v4.7.0 PTU 11475995","path":"data/v4.7.0-PTU.11475995"};
     </script>
     <script src="./chart-utils.js"></script>
     <script src="./dom-utils.js"></script>

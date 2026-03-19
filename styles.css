@@ -234,7 +234,7 @@ h1 {
 
 .rarity-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 20px;
 }
 
@@ -333,6 +333,7 @@ h1 {
     align-items: center;
     margin-bottom: 8px;
     font-size: 0.9rem;
+    gap: 8px;
 }
 
 .composition-bar {
@@ -340,7 +341,7 @@ h1 {
     height: 6px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
-    margin: 0 10px;
+    margin: 0;
     overflow: hidden;
     position: relative;
 }
@@ -352,15 +353,28 @@ h1 {
 }
 
 .composition-label {
-    min-width: 120px;
+    min-width: 100px;
     color: #ccc;
 }
 
 .composition-range {
-    min-width: 100px;
+    min-width: 90px;
     text-align: right;
     color: #00d9ff;
     font-family: 'Orbitron', sans-serif;
+    flex-shrink: 0;
+}
+
+.quality-scale {
+    min-width: 65px;
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    font-family: 'Rajdhani', sans-serif;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 4px;
+    border-radius: 3px;
+    flex-shrink: 0;
 }
 
 .expand-hint {
@@ -433,7 +447,8 @@ h1 {
     font-weight: bold;
 }
 
-#version-select-a, #version-select-b {
+#version-select-a,
+#version-select-b {
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(0, 217, 255, 0.5);
     color: #fff;

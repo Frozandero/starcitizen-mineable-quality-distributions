@@ -188,9 +188,15 @@ function createRarityCard(rarity, rocks) {
             range.className = 'composition-range';
             range.textContent = `${comp.min}% - ${comp.max}%`;
 
+            const qualityScale = document.createElement('span');
+            qualityScale.className = 'quality-scale';
+            qualityScale.textContent = `QS: ${comp.qualityScale || 1}`;
+            qualityScale.title = 'Quality Scale';
+
             row.appendChild(label);
             row.appendChild(bar);
             row.appendChild(range);
+            row.appendChild(qualityScale);
             details.appendChild(row);
         });
 
@@ -233,7 +239,7 @@ function createComparisonSummaryTable(qualityDataA, qualityDataB, versionALabel,
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    
+
     const categoryOrder = ['Ship Mineables', 'Harvestables', 'Ground Mineables', 'FPS Mineables', 'Creatures'];
 
     for (const category of categoryOrder) {
@@ -386,7 +392,7 @@ function createRockCompositionComparison(rockDataA, rockDataB, versionALabel, ve
 
     for (const [rarity, rocksA] of Object.entries(rockDataA)) {
         const rocksB = rockDataB[rarity] || [];
-        
+
         const comparisonCard = document.createElement('div');
         comparisonCard.className = 'rarity-card';
 
@@ -437,8 +443,15 @@ function createRockCompositionComparison(rockDataA, rockDataB, versionALabel, ve
                     range.style.fontSize = '0.85rem';
                     range.style.color = '#aaa';
 
+                    const qualityScale = document.createElement('span');
+                    qualityScale.textContent = `QS: ${comp.qualityScale || 1}`;
+                    qualityScale.style.fontSize = '0.85rem';
+                    qualityScale.style.color = '#888';
+                    qualityScale.title = 'Quality Scale';
+
                     row.appendChild(label);
                     row.appendChild(range);
+                    row.appendChild(qualityScale);
                     compositionList.appendChild(row);
                 });
 

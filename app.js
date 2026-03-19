@@ -8,7 +8,7 @@ let versionB = null;
 // Set view mode (single or compare)
 function setViewMode(mode) {
     viewMode = mode;
-    
+
     const singleSelector = document.getElementById('single-version-selector');
     const compareSelector = document.getElementById('compare-version-selector');
     const singleBtn = document.getElementById('single-mode-btn');
@@ -198,6 +198,14 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
 
     const versionLabel = VERSIONS.find(v => v.id === versionId)?.label || versionId;
 
+    // Collect all override types from quality data
+    const allOverrideTypes = new Set();
+    Object.values(qualityData).forEach(categoryItems => {
+        categoryItems.forEach(item => {
+            getOverrideTypes(item).forEach(type => allOverrideTypes.add(type));
+        });
+    });
+
     let legendHtml = `
         <div class="legend">
             <div class="legend-item">
@@ -228,6 +236,22 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
             `;
         }
     }
+
+    // Add custom override types
+    allOverrideTypes.forEach(type => {
+        if (!['pyro', 'rcd', 'torite'].includes(type)) {
+            const color = overrideColors[type];
+            if (color) {
+                legendHtml += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: ${color.bg.replace('0.15', '0.8')}"></div>
+                        <span class="legend-label">${color.label || type.charAt(0).toUpperCase() + type.slice(1)} Override</span>
+                    </div>
+                `;
+            }
+        }
+    });
+
     legendHtml += `</div>`;
 
     let rcdSectionHtml = '';
