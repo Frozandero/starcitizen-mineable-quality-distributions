@@ -36,18 +36,18 @@ async function loadVersion(versionId) {
     content.innerHTML = '<div class="loading">Loading data...</div>';
 
     try {
-        const [qualityRes, rockRes] = await Promise.all([
-            fetch(`./data/${versionId}/quality_distributions.json`),
-            fetch(`./data/${versionId}/rock_compositions.json`)
+        const [qualityData, rockData] = await Promise.all([
+            window.cacheUtils.loadDataWithCache(`./data/${versionId}/quality_distributions.json`, `${versionId}_quality`),
+            window.cacheUtils.loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`)
         ]);
 
-        const qualityJson = await qualityRes.json();
-        const rockData = await rockRes.json();
+        const qualityJson = qualityData;
+        const rockJson = rockData;
 
-        const qualityData = qualityJson.categories || qualityJson;
+        const qualityDistributions = qualityJson.categories || qualityJson;
         const rockCrackerData = qualityJson.rockCrackerDistributions || null;
 
-        renderContent(qualityData, rockData, rockCrackerData, versionId);
+        renderContent(qualityDistributions, rockJson, rockCrackerData, versionId);
     } catch (error) {
         console.error('Error loading version data:', error);
         content.innerHTML = '<div class="loading">Error loading data. Please try again.</div>';
@@ -59,41 +59,26 @@ async function loadComparison(versionIdA, versionIdB) {
     const content = document.getElementById('content');
     content.innerHTML = '<div class="loading">Loading comparison data...</div>';
 
-    // Debug logging
-    console.log('loadComparison called with:', { versionIdA, versionIdB, viewMode });
-
     if (!versionIdA || !versionIdB) {
-        console.error('Missing version IDs:', { versionIdA, versionIdB });
         content.innerHTML = '<div class="loading">Error: Please select both versions to compare.</div>';
         return;
     }
 
     try {
-        const [qualityResA, rockResA, qualityResB, rockResB] = await Promise.all([
-            fetch(`./data/${versionIdA}/quality_distributions.json`),
-            fetch(`./data/${versionIdA}/rock_compositions.json`),
-            fetch(`./data/${versionIdB}/quality_distributions.json`),
-            fetch(`./data/${versionIdB}/rock_compositions.json`)
+        const [qualityDataA, rockDataA, qualityDataB, rockDataB] = await Promise.all([
+            window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/quality_distributions.json`, `${versionIdA}_quality`),
+            window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/rock_compositions.json`, `${versionIdA}_rock`),
+            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/quality_distributions.json`, `${versionIdB}_quality`),
+            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/rock_compositions.json`, `${versionIdB}_rock`)
         ]);
 
-        if (!qualityResA.ok || !qualityResB.ok) {
-            throw new Error(`Failed to fetch quality distributions for ${versionIdA} or ${versionIdB}`);
-        }
-
-        const qualityJsonA = await qualityResA.json();
-        const rockDataA = await rockResA.json();
-        const qualityJsonB = await qualityResB.json();
-        const rockDataB = await rockResB.json();
-
-        const qualityDataA = qualityJsonA.categories || qualityJsonA;
-        const qualityDataB = qualityJsonB.categories || qualityJsonB;
-
-        console.log('Comparison data loaded successfully:', { versionIdA, versionIdB });
+        const qualityDistributionsA = qualityDataA.categories || qualityDataA;
+        const qualityDistributionsB = qualityDataB.categories || qualityDataB;
 
         versionA = versionIdA;
         versionB = versionIdB;
 
-        renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockDataB, versionIdA, versionIdB);
+        renderComparisonContent(qualityDistributionsA, rockDataA, qualityDistributionsB, rockDataB, versionIdA, versionIdB);
     } catch (error) {
         console.error('Error loading comparison data:', error);
         content.innerHTML = `<div class="loading">Error loading comparison data: ${error.message}. Please try again.</div>`;
@@ -377,7 +362,6 @@ function init() {
         currentVersion = VERSIONS[0].id;
         versionA = versionSelectA.value;
         versionB = versionSelectB.value;
-        console.log('Initialized with:', { currentVersion, versionA, versionB });
     }
 
     // Event listeners
