@@ -66,12 +66,28 @@ function createCategorySection(categoryData) {
         }
 
         if (item.improvement) {
-            statsHtml += `
-                <div class="stat-card">
-                    <div class="stat-label">Improvement</div>
-                    <div class="stat-value" style="color: #00ff88">+${item.improvement}%</div>
-                </div>
-            `;
+            const calculateFunc = window.clampEnabled ? calculateImprovementClamped : calculateImprovement;
+            let improvementValue;
+            if (item.default && item.pyro) {
+                improvementValue = calculateFunc(item.default, item.pyro);
+            } else if (item.default && Object.keys(item).length > 2) {
+                // Find first override that's not 'name' or 'improvement'
+                const overrideKey = Object.keys(item).find(key => 
+                    key !== 'name' && key !== 'improvement' && key !== 'default' && typeof item[key] === 'object'
+                );
+                if (overrideKey) {
+                    improvementValue = calculateFunc(item.default, item[overrideKey]);
+                }
+            }
+            
+            if (improvementValue) {
+                statsHtml += `
+                    <div class="stat-card">
+                        <div class="stat-label">Improvement</div>
+                        <div class="stat-value" style="color: #00ff88">+${improvementValue}%</div>
+                    </div>
+                `;
+            }
         }
 
         const minVal = item.default ? item.default.min : '?';
@@ -100,7 +116,7 @@ function createCategorySection(categoryData) {
             if (item.default) {
                 datasets.push({
                     label: 'Default',
-                    data: generateDistributionData(item.default),
+                    data: generateDistributionData(item.default, window.clampEnabled || false),
                     borderColor: overrideColors.default.border,
                     backgroundColor: overrideColors.default.bg,
                     borderWidth: 2,
@@ -114,7 +130,7 @@ function createCategorySection(categoryData) {
             for (const type of overrideTypesPresent) {
                 datasets.push({
                     label: overrideColors[type]?.label || type,
-                    data: generateDistributionData(item[type]),
+                    data: generateDistributionData(item[type], window.clampEnabled || false),
                     borderColor: overrideColors[type]?.border || '#fff',
                     backgroundColor: overrideColors[type]?.bg || 'rgba(255,255,255,0.1)',
                     borderWidth: 2,
@@ -130,7 +146,7 @@ function createCategorySection(categoryData) {
                 data: {
                     datasets: datasets
                 },
-                options: createChartOptions()
+                options: createChartOptions(window.clampEnabled || false)
             });
 
             charts.push(chart);
@@ -339,7 +355,7 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
     const datasets = [
         {
             label: versionALabel,
-            data: generateDistributionData(itemA.default),
+            data: generateDistributionData(itemA.default, window.clampEnabled || false),
             borderColor: versionColors.versionA.border,
             backgroundColor: versionColors.versionA.bg,
             borderWidth: 2,
@@ -350,7 +366,7 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
         },
         {
             label: versionBLabel,
-            data: generateDistributionData(itemB.default),
+            data: generateDistributionData(itemB.default, window.clampEnabled || false),
             borderColor: versionColors.versionB.border,
             backgroundColor: versionColors.versionB.bg,
             borderWidth: 2,
@@ -364,7 +380,7 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
     const chart = new Chart(ctx, {
         type: 'line',
         data: { datasets },
-        options: createChartOptions()
+        options: createChartOptions(window.clampEnabled || false)
     });
 
     charts.push(chart);

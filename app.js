@@ -4,6 +4,7 @@ let currentVersion = null;
 let viewMode = 'single';
 let versionA = null;
 let versionB = null;
+let clampEnabled = false;
 
 // Set view mode (single or compare)
 function setViewMode(mode) {
@@ -107,10 +108,15 @@ function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockData
     const versionALabel = VERSIONS.find(v => v.id === versionIdA)?.label || versionIdA;
     const versionBLabel = VERSIONS.find(v => v.id === versionIdB)?.label || versionIdB;
 
+    const clampInfo = clampEnabled ? 'Clamped to min/max range' : 'Showing full theoretical range';
+
     let html = `
         <div class="info-box">
             <strong>Comparison Mode:</strong> Viewing quality distribution differences between ${versionALabel} and ${versionBLabel}. 
             Overlapping curves show how distributions shifted. Summary table provides quick overview of changes.
+            <br><br>
+            <strong>Current View:</strong> ${clampInfo}. When clamped, graphs start at min and end at max.
+            Percentages in tooltips reflect clamped distribution.
         </div>
     `;
 
@@ -270,11 +276,16 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
         `;
     }
 
+    const clampInfo = clampEnabled ? 'Clamped to min/max range' : 'Showing full theoretical range';
+
     let html = `
         <div class="info-box">
             <strong>Note:</strong> These are normal distributions bounded by min/max values from game files (mean, min,
             max, stddev). The charts show probability density of obtaining items at different quality levels (1-1000
             scale). Pyro system overrides typically offer improved distributions compared to default settings.
+            <br><br>
+            <strong>Current View:</strong> ${clampInfo}. When clamped, graphs start at min and end at max.
+            Percentages in tooltips reflect the clamped distribution.
         </div>
 
         ${legendHtml}
@@ -389,6 +400,22 @@ function init() {
 
     document.getElementById('single-mode-btn').addEventListener('click', () => setViewMode('single'));
     document.getElementById('compare-mode-btn').addEventListener('click', () => setViewMode('compare'));
+
+    // Clamp toggle event listener
+    const clampToggle = document.getElementById('clamp-toggle-input');
+    if (clampToggle) {
+        clampToggle.addEventListener('change', (e) => {
+            clampEnabled = e.target.checked;
+            window.clampEnabled = clampEnabled; // Make it globally accessible
+            
+            // Reload current view
+            if (viewMode === 'single') {
+                loadVersion(currentVersion);
+            } else {
+                loadComparison(versionA, versionB);
+            }
+        });
+    }
 
     // Load default view
     loadVersion(currentVersion);

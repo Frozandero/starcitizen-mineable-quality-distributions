@@ -51,7 +51,27 @@ function normalDistributionCDF(x, mean, stddev) {
     return 0.5 * (1 + erf((x - mean) / (stddev * Math.sqrt(2))));
 }
 
-// Probability that X > x
+// Probability that X > x (for clamped distributions)
+function probabilityGreaterThanClamped(x, mean, stddev, minVal, maxVal) {
+    // Calculate probability from min to max (clamped range)
+    const probAtX = normalDistributionCDF(x, mean, stddev);
+    const probAtMax = normalDistributionCDF(maxVal, mean, stddev);
+    const probAtMin = normalDistributionCDF(minVal, mean, stddev);
+
+    // Probability above x within the clamped range
+    const probAboveX = probAtMax - Math.max(probAtX, probAtMin);
+    
+    // Total probability within the clamped range
+    const totalProb = probAtMax - probAtMin;
+
+    // Normalize
+    if (totalProb <= 0) return 0;
+    const normalizedProb = Math.max(0, Math.min(1, probAboveX / totalProb));
+
+    return normalizedProb;
+}
+
+// Probability that X > x (for unclamped distributions)
 function probabilityGreaterThan(x, mean, stddev, maxVal) {
     const zScore = (x - mean) / stddev;
     const probGreaterThan = 1 - normalDistributionCDF(x, mean, stddev);
@@ -66,13 +86,27 @@ function probabilityGreaterThan(x, mean, stddev, maxVal) {
 }
 
 // Generate distribution data for charts
-function generateDistributionData(dist) {
+function generateDistributionData(dist, clamp = false) {
     const data = [];
-    for (let x = 1; x <= dist.max; x++) {
-        if (x >= 1 && x <= dist.max) {
-            const y = normalDistributionPDF(x, dist.mean, dist.stddev);
-            data.push({ x: x, y: parseFloat(y.toFixed(6)) });
+    const xMin = clamp ? dist.min : 1;
+    const xMax = 1000; // Always keep x-axis at 1-1000
+    
+    for (let x = xMin; x <= xMax; x++) {
+        let y = 0;
+        
+        if (clamp) {
+            // For clamped: show distribution only within min-max range, zero elsewhere
+            if (x >= dist.min && x <= dist.max) {
+                y = normalDistributionPDF(x, dist.mean, dist.stddev);
+            }
+        } else {
+            // For unclamped: show full distribution from 1
+            if (x >= 1 && x <= dist.max) {
+                y = normalDistributionPDF(x, dist.mean, dist.stddev);
+            }
         }
+        
+        data.push({ x: x, y: parseFloat(y.toFixed(6)) });
     }
     return data;
 }
@@ -90,7 +124,7 @@ function getOverrideTypes(item) {
 }
 
 // Create tooltip callbacks
-function createTooltipCallbacks() {
+function createTooltipCallbacks(clampEnabled = false) {
     return {
         title: function (context) {
             if (context && context.length > 0) {
@@ -108,7 +142,12 @@ function createTooltipCallbacks() {
             const dist = context.dataset.customData;
             let probText = '';
             if (dist) {
-                const prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
+                let prob;
+                if (clampEnabled) {
+                    prob = probabilityGreaterThanClamped(qualityValue, dist.mean, dist.stddev, dist.min, dist.max);
+                } else {
+                    prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
+                }
                 probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(2)}%`;
             }
 
@@ -150,7 +189,7 @@ function createChartScales() {
 }
 
 // Create chart options
-function createChartOptions() {
+function createChartOptions(clampEnabled = false) {
     return {
         responsive: true,
         maintainAspectRatio: true,
@@ -164,7 +203,7 @@ function createChartOptions() {
                 bodyColor: '#fff',
                 borderColor: 'rgba(0, 217, 255, 0.5)',
                 borderWidth: 1,
-                callbacks: createTooltipCallbacks()
+                callbacks: createTooltipCallbacks(clampEnabled)
             }
         },
         scales: createChartScales(),
@@ -206,4 +245,28 @@ function calculateVerdict(meanDelta, stddevDelta) {
 function formatDelta(delta) {
     const sign = delta.positive ? '+' : delta.negative ? '' : '±';
     return `${sign}${delta.absolute} (${sign}${delta.percent}%)`;
+}
+
+// Calculate improvement percentage for clamped distributions
+function calculateImprovementClamped(defaultDist, overrideDist) {
+    // Calculate probability of getting > 500 quality for both distributions
+    const defaultProb = probabilityGreaterThanClamped(500, defaultDist.mean, defaultDist.stddev, defaultDist.min, defaultDist.max);
+    const overrideProb = probabilityGreaterThanClamped(500, overrideDist.mean, overrideDist.stddev, overrideDist.min, overrideDist.max);
+
+    // Calculate improvement as percentage increase
+    if (defaultProb === 0) return 0;
+    const improvement = ((overrideProb - defaultProb) / defaultProb) * 100;
+    return improvement.toFixed(1);
+}
+
+// Calculate improvement percentage for unclamped distributions
+function calculateImprovement(defaultDist, overrideDist) {
+    // Calculate probability of getting > 500 quality for both distributions
+    const defaultProb = probabilityGreaterThan(500, defaultDist.mean, defaultDist.stddev, defaultDist.max);
+    const overrideProb = probabilityGreaterThan(500, overrideDist.mean, overrideDist.stddev, overrideDist.max);
+
+    // Calculate improvement as percentage increase
+    if (defaultProb === 0) return 0;
+    const improvement = ((overrideProb - defaultProb) / defaultProb) * 100;
+    return improvement.toFixed(1);
 }
