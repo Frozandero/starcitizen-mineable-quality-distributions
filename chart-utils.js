@@ -53,14 +53,24 @@ function normalDistributionCDF(x, mean, stddev) {
 
 // Probability that X > x (for clamped distributions)
 function probabilityGreaterThanClamped(x, mean, stddev, minVal, maxVal) {
+    // If x is below the minimum, all distribution values are above x
+    if (x < minVal) {
+        return 1.0;
+    }
+
+    // If x is at or above maximum, no distribution values are above x
+    if (x >= maxVal) {
+        return 0;
+    }
+
     // Calculate probability from min to max (clamped range)
     const probAtX = normalDistributionCDF(x, mean, stddev);
     const probAtMax = normalDistributionCDF(maxVal, mean, stddev);
     const probAtMin = normalDistributionCDF(minVal, mean, stddev);
 
     // Probability above x within the clamped range
-    const probAboveX = probAtMax - Math.max(probAtX, probAtMin);
-    
+    const probAboveX = probAtMax - probAtX;
+
     // Total probability within the clamped range
     const totalProb = probAtMax - probAtMin;
 
@@ -88,7 +98,7 @@ function probabilityGreaterThan(x, mean, stddev, maxVal) {
 // Generate distribution data for charts
 function generateDistributionData(dist, clamp = false) {
     const data = [];
-    const xMin = clamp ? dist.min : 1;
+    const xMin = 1; // Always start from 1 for proper Chart.js alignment
     const xMax = 1000; // Always keep x-axis at 1-1000
     
     for (let x = xMin; x <= xMax; x++) {
@@ -99,6 +109,7 @@ function generateDistributionData(dist, clamp = false) {
             if (x >= dist.min && x <= dist.max) {
                 y = normalDistributionPDF(x, dist.mean, dist.stddev);
             }
+            // Else y remains 0 (no density outside clamped range)
         } else {
             // For unclamped: show full distribution from 1
             if (x >= 1 && x <= dist.max) {

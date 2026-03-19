@@ -328,7 +328,8 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
     for (const category of categoryOrder) {
         const items = qualityData[category];
         if (items && items.length > 0) {
-            qualityContainer.appendChild(createCategorySection({ category, items }));
+            const categoryRockData = category === 'Ship Mineables' ? rockData : null;
+            qualityContainer.appendChild(createCategorySection({ category, items }, categoryRockData));
         }
     }
 

@@ -9,7 +9,7 @@ function destroyCharts() {
 }
 
 // Create category section for quality distributions
-function createCategorySection(categoryData) {
+function createCategorySection(categoryData, rockData = null) {
     const section = document.createElement('div');
     section.className = 'category-section';
 
@@ -35,7 +35,40 @@ function createCategorySection(categoryData) {
             badges += ` <span class="badge badge-${type}" style="background: ${overrideColors[type]?.bg || 'rgba(255,255,255,0.1)'}; border: 1px solid ${overrideColors[type]?.border || 'rgba(255,255,255,0.3)'}; color: #fff">${overrideColors[type]?.label || type}</span>`;
         }
         chartTitle.innerHTML = `${item.name} ${badges}`;
-        container.appendChild(chartTitle);
+
+        // Add tooltip for Ship Mineables
+        if (categoryData.category === 'Ship Mineables' && rockData && rockData[item.name]) {
+            const titleWrapper = document.createElement('div');
+            titleWrapper.className = 'category-title-tooltip';
+
+            const tooltipContent = document.createElement('div');
+            tooltipContent.className = 'tooltip-content';
+
+            const tooltipHeader = document.createElement('h4');
+            tooltipHeader.textContent = `${item.name} Rocks`;
+            tooltipContent.appendChild(tooltipHeader);
+
+            const rockList = document.createElement('ul');
+            const rocks = rockData[item.name];
+            rocks.forEach(rock => {
+                const rockItem = document.createElement('li');
+                rockItem.textContent = rock.name;
+                rockList.appendChild(rockItem);
+            });
+            tooltipContent.appendChild(rockList);
+
+            const tooltipIndicator = document.createElement('span');
+            tooltipIndicator.className = 'tooltip-indicator';
+            tooltipIndicator.innerHTML = '?';
+            tooltipIndicator.title = 'Hover to see rocks in this rarity';
+
+            chartTitle.appendChild(tooltipIndicator);
+            titleWrapper.appendChild(chartTitle);
+            titleWrapper.appendChild(tooltipContent);
+            container.appendChild(titleWrapper);
+        } else {
+            container.appendChild(chartTitle);
+        }
 
         const canvas = document.createElement('canvas');
         canvas.id = `chart-${categoryData.category.replace(/\s/g, '-')}-${item.name.replace(/\s/g, '-')}`;
@@ -72,14 +105,14 @@ function createCategorySection(categoryData) {
                 improvementValue = calculateFunc(item.default, item.pyro);
             } else if (item.default && Object.keys(item).length > 2) {
                 // Find first override that's not 'name' or 'improvement'
-                const overrideKey = Object.keys(item).find(key => 
+                const overrideKey = Object.keys(item).find(key =>
                     key !== 'name' && key !== 'improvement' && key !== 'default' && typeof item[key] === 'object'
                 );
                 if (overrideKey) {
                     improvementValue = calculateFunc(item.default, item[overrideKey]);
                 }
             }
-            
+
             if (improvementValue) {
                 statsHtml += `
                     <div class="stat-card">
@@ -90,7 +123,13 @@ function createCategorySection(categoryData) {
             }
         }
 
-        const minVal = item.default ? item.default.min : '?';
+        let minVal = '?';
+        if (item.default) {
+            minVal = item.default.min;
+        } else if (overrideTypes.length > 0) {
+            minVal = item[overrideTypes[0]].min;
+        }
+
         statsHtml += `
             <div class="stat-card">
                 <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
@@ -338,13 +377,14 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
         </div>
     `;
 
+    const minVal = itemA.default ? itemA.default.min : '?';
     statsDiv.innerHTML += `
         <div class="stat-card">
             <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
                 Quality Range
                 <span class="tooltip-icon" title="The low end of this range is theoretical based on normal distribution. It might not be used by game currently.">?</span>
             </div>
-            <div class="stat-value" style="font-size: 1rem">${itemA.default.min} - 1000</div>
+            <div class="stat-value" style="font-size: 1rem">${minVal} - 1000</div>
         </div>
     `;
 
