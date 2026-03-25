@@ -168,7 +168,7 @@ function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockData
     const footer = document.createElement('footer');
     footer.style.cssText = 'margin-top: 60px; padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255,255,255, 0.1);';
     footer.innerHTML = `
-        <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">Unofficial Fan Site</h3>
+        <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">This is an unofficial Star Citizen Fan Site</h3>
         <p style="color: #888; font-size: 0.9rem; line-height: 1.6; max-width: 800px; margin: 0 auto;">
             This site is not endorsed by or affiliated with Cloud Imperium or Roberts Space Industries group of companies.
             All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
@@ -291,7 +291,7 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
         </div>
 
         <footer style="margin-top: 60px; padding: 30px 20px; text-align: center; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255,255,255, 0.1);">
-            <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">Unofficial Fan Site</h3>
+            <h3 style="font-family: 'Orbitron', sans-serif; color: #ff6432; margin-bottom: 15px;">This is an unofficial Star Citizen Fan Site</h3>
             <p style="color: #888; font-size: 0.9rem; line-height: 1.6; max-width: 800px; margin: 0 auto;">
                 This site is not endorsed by or affiliated with Cloud Imperium or Roberts Space Industries group of companies.
                 All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
@@ -392,7 +392,7 @@ function init() {
         clampToggle.addEventListener('change', (e) => {
             clampEnabled = e.target.checked;
             window.clampEnabled = clampEnabled; // Make it globally accessible
-            
+
             // Reload current view
             if (viewMode === 'single') {
                 loadVersion(currentVersion);
