@@ -4,7 +4,7 @@ let currentVersion = null;
 let viewMode = 'single';
 let versionA = null;
 let versionB = null;
-let clampEnabled = false;
+let clampEnabled = true;
 
 // Set view mode (single or compare)
 function setViewMode(mode) {
@@ -419,6 +419,7 @@ function init() {
     // Clamp toggle event listener
     const clampToggle = document.getElementById('clamp-toggle-input');
     if (clampToggle) {
+        clampToggle.checked = clampEnabled;
         clampToggle.addEventListener('change', (e) => {
             clampEnabled = e.target.checked;
             window.clampEnabled = clampEnabled; // Make it globally accessible
