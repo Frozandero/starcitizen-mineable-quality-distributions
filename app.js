@@ -32,6 +32,7 @@ function setViewMode(mode) {
 
 // Load version data
 async function loadVersion(versionId) {
+    currentVersion = versionId;
     const content = document.getElementById('content');
     content.innerHTML = '<div class="loading">Loading data...</div>';
 
@@ -342,6 +343,7 @@ function init() {
     const singleSelect = document.getElementById('version-select');
     const versionSelectA = document.getElementById('version-select-a');
     const versionSelectB = document.getElementById('version-select-b');
+    const probabilityDecimalsSelect = document.getElementById('probability-decimals-select');
 
     // Populate all three selectors
     [singleSelect, versionSelectA, versionSelectB].forEach(select => {
@@ -386,12 +388,44 @@ function init() {
     document.getElementById('single-mode-btn').addEventListener('click', () => setViewMode('single'));
     document.getElementById('compare-mode-btn').addEventListener('click', () => setViewMode('compare'));
 
+    window.clampEnabled = clampEnabled;
+    window.probabilityDecimals = 2;
+
+    if (probabilityDecimalsSelect) {
+        probabilityDecimalsSelect.innerHTML = '';
+        for (let i = 0; i <= 6; i++) {
+            const option = document.createElement('option');
+            option.value = String(i);
+            option.textContent = String(i);
+            probabilityDecimalsSelect.appendChild(option);
+        }
+
+        probabilityDecimalsSelect.value = String(window.probabilityDecimals);
+        probabilityDecimalsSelect.addEventListener('change', (e) => {
+            let value = Number.parseInt(e.target.value, 10);
+            if (Number.isNaN(value)) {
+                value = 2;
+            }
+
+            window.probabilityDecimals = Math.max(0, Math.min(6, value));
+            e.target.value = String(window.probabilityDecimals);
+
+            if (typeof refreshCharts === 'function') {
+                refreshCharts();
+            }
+        });
+    }
+
     // Clamp toggle event listener
     const clampToggle = document.getElementById('clamp-toggle-input');
     if (clampToggle) {
         clampToggle.addEventListener('change', (e) => {
             clampEnabled = e.target.checked;
             window.clampEnabled = clampEnabled; // Make it globally accessible
+
+            if (typeof preserveExpandedChart === 'function') {
+                preserveExpandedChart();
+            }
 
             // Reload current view
             if (viewMode === 'single') {

@@ -50,6 +50,28 @@
             <input type="checkbox" id="clamp-toggle-input">
             <span class="clamp-toggle-slider"></span>
         </label>
+        <span class="settings-divider" aria-hidden="true"></span>
+        <label class="clamp-toggle-label" for="probability-decimals-select">Tooltip % decimals</label>
+        <select id="probability-decimals-select" class="probability-decimals-select"
+            aria-label="Decimal places for P(x > n) percentage in chart tooltips"></select>
+    </div>
+
+    <div id="chart-expand-modal" class="chart-expand-modal" hidden>
+        <div class="chart-expand-surface" role="dialog" aria-modal="true" aria-labelledby="chart-expand-title">
+            <div class="chart-expand-header">
+                <div class="chart-expand-meta">
+                    <p class="chart-expand-kicker">Expanded Chart</p>
+                    <h2 id="chart-expand-title" class="chart-expand-title"></h2>
+                    <p id="chart-expand-subtitle" class="chart-expand-subtitle"></p>
+                </div>
+                <button type="button" class="chart-expand-close" data-chart-modal-close aria-label="Close expanded chart">
+                    Close
+                </button>
+            </div>
+            <div class="chart-expand-canvas-wrap">
+                <canvas id="chart-expand-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <footer class="ai-disclaimer">
@@ -62,7 +84,7 @@
     <script>
         const VERSIONS = [{"id":"v4.7.0-LIVE.11545720","label":"v4.7.0-LIVE.11545720","path":"data/v4.7.0-LIVE.11545720"},{"id":"v4.7.0-LIVE.11518367","label":"v4.7.0-LIVE.11518367","path":"data/v4.7.0-LIVE.11518367"},{"id":"v4.7.0-PTU.11509651","label":"v4.7.0 PTU 11509651","path":"data/v4.7.0-PTU.11509651"},{"id":"v4.7.0-PTU.11506930","label":"v4.7.0 PTU 11506930","path":"data/v4.7.0-PTU.11506930"},{"id":"v4.7.0-PTU.11494258","label":"v4.7.0 PTU 11494258","path":"data/v4.7.0-PTU.11494258"},{"id":"v4.7.0-PTU.11485118","label":"v4.7.0 PTU 11485118","path":"data/v4.7.0-PTU.11485118"},{"id":"v4.7.0-PTU.11475995","label":"v4.7.0 PTU 11475995","path":"data/v4.7.0-PTU.11475995"},{"id":"v4.7.0-PTU.11468334","label":"v4.7.0 PTU 11468334","path":"data/v4.7.0-PTU.11468334"},{"id":"v4.7.0-PTU.11458882","label":"v4.7.0 PTU 11458882","path":"data/v4.7.0-PTU.11458882"},{"id":"v4.7.0-PTU.11450623","label":"v4.7.0 PTU 11450623","path":"data/v4.7.0-PTU.11450623"},{"id":"v4.7.0-PTU.11445650","label":"v4.7.0 PTU 11445650","path":"data/v4.7.0-PTU.11445650"}];
         const DEFAULT_VERSION = {"id":"v4.7.0-LIVE.11545720","label":"v4.7.0-LIVE.11545720","path":"data/v4.7.0-LIVE.11545720"};
-        const BUILD_NONCE = "mndj7nbmx3rjmzdfte";
+        const BUILD_NONCE = "mnea4yrcm0scjxmi7bp";
     </script>
     <script src="./chart-utils.js"></script>
     <script src="./dom-utils.js"></script>

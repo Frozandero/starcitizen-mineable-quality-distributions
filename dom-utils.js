@@ -1,11 +1,277 @@
 // DOM manipulation utilities for rendering UI elements
 
 let charts = [];
+let expandedChart = null;
+let expandedChartTrigger = null;
+let expandedChartModal = null;
+let expandedChartCanvas = null;
+let expandedChartTitle = null;
+let expandedChartSubtitle = null;
+let activeExpandedChartKey = null;
+let bodyScrollPaddingRight = '';
+
+function cloneChartDatasets(datasets) {
+    return datasets.map((dataset) => ({
+        ...dataset,
+        data: dataset.data.map((point) => ({ ...point }))
+    }));
+}
 
 // Destroy all charts
 function destroyCharts() {
     charts.forEach(chart => chart.destroy());
     charts = [];
+
+    if (window.__preserveExpandedChartOnNextRender && activeExpandedChartKey) {
+        window.__restoreExpandedChartKey = activeExpandedChartKey;
+        closeExpandedChart({ restoreFocus: false, clearActiveKey: false });
+    } else {
+        window.__restoreExpandedChartKey = null;
+        closeExpandedChart({ restoreFocus: false });
+    }
+
+    window.__preserveExpandedChartOnNextRender = false;
+}
+
+function refreshCharts() {
+    charts.forEach((chart) => chart.update('none'));
+    if (expandedChart) {
+        expandedChart.update('none');
+    }
+}
+
+function preserveExpandedChart() {
+    if (activeExpandedChartKey) {
+        window.__preserveExpandedChartOnNextRender = true;
+    }
+}
+
+function lockBodyScroll() {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    bodyScrollPaddingRight = document.body.style.paddingRight;
+
+    if (scrollbarWidth > 0) {
+        const currentPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
+        document.body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
+    }
+
+    document.body.classList.add('chart-modal-open');
+}
+
+function unlockBodyScroll() {
+    document.body.classList.remove('chart-modal-open');
+    document.body.style.paddingRight = bodyScrollPaddingRight;
+    bodyScrollPaddingRight = '';
+}
+
+function buildSingleViewDatasets(item) {
+    const datasets = [];
+    const overrideTypesPresent = getOverrideTypes(item);
+
+    if (item.default) {
+        datasets.push({
+            label: 'Default',
+            data: generateDistributionData(item.default, window.clampEnabled || false),
+            borderColor: overrideColors.default.border,
+            backgroundColor: overrideColors.default.bg,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            customData: item.default
+        });
+    }
+
+    for (const type of overrideTypesPresent) {
+        datasets.push({
+            label: overrideColors[type]?.label || type,
+            data: generateDistributionData(item[type], window.clampEnabled || false),
+            borderColor: overrideColors[type]?.border || '#fff',
+            backgroundColor: overrideColors[type]?.bg || 'rgba(255,255,255,0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            customData: item[type]
+        });
+    }
+
+    return datasets;
+}
+
+function buildComparisonDatasets(itemA, itemB, versionALabel, versionBLabel) {
+    return [
+        {
+            label: versionALabel,
+            data: generateDistributionData(itemA.default, window.clampEnabled || false),
+            borderColor: versionColors.versionA.border,
+            backgroundColor: versionColors.versionA.bg,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            customData: itemA.default
+        },
+        {
+            label: versionBLabel,
+            data: generateDistributionData(itemB.default, window.clampEnabled || false),
+            borderColor: versionColors.versionB.border,
+            backgroundColor: versionColors.versionB.bg,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            customData: itemB.default
+        }
+    ];
+}
+
+function createChartInstance(canvas, datasets, optionOverrides = {}) {
+    const ctx = canvas.getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: cloneChartDatasets(datasets)
+        },
+        options: createChartOptions(window.clampEnabled || false, optionOverrides)
+    });
+
+    charts.push(chart);
+    return chart;
+}
+
+function getExpandedChartElements() {
+    if (expandedChartModal) {
+        return {
+            modal: expandedChartModal,
+            canvas: expandedChartCanvas,
+            title: expandedChartTitle,
+            subtitle: expandedChartSubtitle
+        };
+    }
+
+    expandedChartModal = document.getElementById('chart-expand-modal');
+    expandedChartCanvas = document.getElementById('chart-expand-canvas');
+    expandedChartTitle = document.getElementById('chart-expand-title');
+    expandedChartSubtitle = document.getElementById('chart-expand-subtitle');
+
+    if (!expandedChartModal || !expandedChartCanvas || !expandedChartTitle || !expandedChartSubtitle) {
+        return null;
+    }
+
+    const closeButton = expandedChartModal.querySelector('[data-chart-modal-close]');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeExpandedChart);
+    }
+
+    expandedChartModal.addEventListener('click', (event) => {
+        if (event.target === expandedChartModal) {
+            closeExpandedChart();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && expandedChartModal && !expandedChartModal.hidden) {
+            closeExpandedChart();
+        }
+    });
+
+    return {
+        modal: expandedChartModal,
+        canvas: expandedChartCanvas,
+        title: expandedChartTitle,
+        subtitle: expandedChartSubtitle
+    };
+}
+
+function closeExpandedChart(options = {}) {
+    const { restoreFocus = true, clearActiveKey = true } = options;
+    const elements = getExpandedChartElements();
+    if (!elements) {
+        return;
+    }
+
+    if (expandedChart) {
+        expandedChart.destroy();
+        expandedChart = null;
+    }
+
+    elements.modal.hidden = true;
+    unlockBodyScroll();
+
+    if (clearActiveKey) {
+        activeExpandedChartKey = null;
+    }
+
+    if (restoreFocus && expandedChartTrigger) {
+        expandedChartTrigger.focus({ preventScroll: true });
+    }
+
+    if (clearActiveKey || restoreFocus) {
+        expandedChartTrigger = null;
+    }
+}
+
+function openExpandedChart(config, triggerButton) {
+    const elements = getExpandedChartElements();
+    if (!elements) {
+        return;
+    }
+
+    if (expandedChart) {
+        expandedChart.destroy();
+    }
+
+    activeExpandedChartKey = config.key || null;
+    expandedChartTrigger = triggerButton;
+    elements.title.textContent = config.title;
+    elements.subtitle.textContent = config.subtitle || '';
+    elements.modal.hidden = false;
+    lockBodyScroll();
+
+    expandedChart = new Chart(elements.canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+            datasets: cloneChartDatasets(config.datasets)
+        },
+        options: createChartOptions(window.clampEnabled || false, {
+            maintainAspectRatio: false,
+            aspectRatio: undefined,
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        })
+    });
+}
+
+function createExpandButton(label, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'chart-expand-button';
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9 3H3v6h2V6.41l4.29 4.3 1.42-1.42L6.41 5H9V3zm6 0v2h2.59l-4.3 4.29 1.42 1.42L19 6.41V9h2V3h-6zm4 12v2.59l-4.29-4.3-1.42 1.42 4.3 4.29H15v2h6v-6h-2zM10.71 14.29l-4.3 4.3V16H4v6h6v-2H7.41l4.3-4.29-1.42-1.42z"></path>
+        </svg>
+    `;
+    button.addEventListener('click', onClick);
+    return button;
+}
+
+function createChartHeader(titleContent, expandButton) {
+    const header = document.createElement('div');
+    header.className = 'chart-header';
+
+    const titleArea = document.createElement('div');
+    titleArea.className = 'chart-heading-area';
+    titleArea.appendChild(titleContent);
+
+    header.appendChild(titleArea);
+    header.appendChild(expandButton);
+    return header;
 }
 
 // Create category section for quality distributions
@@ -27,14 +293,21 @@ function createCategorySection(categoryData, rockData = null) {
 
         const chartTitle = document.createElement('h3');
         chartTitle.className = 'chart-title';
+        chartTitle.textContent = item.name;
 
         const overrideTypes = getOverrideTypes(item);
         let badges = '<span class="badge badge-default">Default</span>';
         for (const type of overrideTypes) {
-            const color = overrideColors[type]?.label || type;
             badges += ` <span class="badge badge-${type}" style="background: ${overrideColors[type]?.bg || 'rgba(255,255,255,0.1)'}; border: 1px solid ${overrideColors[type]?.border || 'rgba(255,255,255,0.3)'}; color: #fff">${overrideColors[type]?.label || type}</span>`;
         }
-        chartTitle.innerHTML = `${item.name} ${badges}`;
+
+        const badgesWrapper = document.createElement('span');
+        badgesWrapper.className = 'chart-title-badges';
+        badgesWrapper.innerHTML = badges;
+        chartTitle.appendChild(document.createTextNode(' '));
+        chartTitle.appendChild(badgesWrapper);
+
+        let titleContent = chartTitle;
 
         // Add tooltip for Ship Mineables
         if (categoryData.category === 'Ship Mineables' && rockData && rockData[item.name]) {
@@ -65,10 +338,21 @@ function createCategorySection(categoryData, rockData = null) {
             chartTitle.appendChild(tooltipIndicator);
             titleWrapper.appendChild(chartTitle);
             titleWrapper.appendChild(tooltipContent);
-            container.appendChild(titleWrapper);
-        } else {
-            container.appendChild(chartTitle);
+            titleContent = titleWrapper;
         }
+
+        const chartKey = `single:${categoryData.category}:${item.name}`;
+        const chartDatasets = buildSingleViewDatasets(item);
+        const expandButton = createExpandButton(`Expand chart for ${item.name}`, () => {
+            openExpandedChart({
+                key: chartKey,
+                title: `${item.name} Quality Distribution`,
+                subtitle: `${categoryData.category} · ${chartDatasets.map((dataset) => dataset.label).join(' vs ')}`,
+                datasets: chartDatasets
+            }, expandButton);
+        });
+
+        container.appendChild(createChartHeader(titleContent, expandButton));
 
         const canvas = document.createElement('canvas');
         canvas.id = `chart-${categoryData.category.replace(/\s/g, '-')}-${item.name.replace(/\s/g, '-')}`;
@@ -148,47 +432,17 @@ function createCategorySection(categoryData, rockData = null) {
         const hasAnyData = (item.default && overrideTypesPresent.length > 0) || overrideTypesPresent.length > 0;
 
         if (hasAnyData) {
-            const ctx = canvas.getContext('2d');
+            createChartInstance(canvas, chartDatasets);
 
-            const datasets = [];
-
-            if (item.default) {
-                datasets.push({
-                    label: 'Default',
-                    data: generateDistributionData(item.default, window.clampEnabled || false),
-                    borderColor: overrideColors.default.border,
-                    backgroundColor: overrideColors.default.bg,
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    customData: item.default
-                });
+            if (window.__restoreExpandedChartKey === chartKey) {
+                window.__restoreExpandedChartKey = null;
+                openExpandedChart({
+                    key: chartKey,
+                    title: `${item.name} Quality Distribution`,
+                    subtitle: `${categoryData.category} · ${chartDatasets.map((dataset) => dataset.label).join(' vs ')}`,
+                    datasets: chartDatasets
+                }, expandButton);
             }
-
-            for (const type of overrideTypesPresent) {
-                datasets.push({
-                    label: overrideColors[type]?.label || type,
-                    data: generateDistributionData(item[type], window.clampEnabled || false),
-                    borderColor: overrideColors[type]?.border || '#fff',
-                    backgroundColor: overrideColors[type]?.bg || 'rgba(255,255,255,0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    customData: item[type]
-                });
-            }
-
-            const chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: datasets
-                },
-                options: createChartOptions(window.clampEnabled || false)
-            });
-
-            charts.push(chart);
         }
     });
 
@@ -349,7 +603,19 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
     chartTitle.innerHTML = `${itemA.name} 
         <span class="version-badge version-badge-a">${versionALabel}</span>
         <span class="version-badge version-badge-b">${versionBLabel}</span>`;
-    container.appendChild(chartTitle);
+
+    const chartKey = `compare:${category}:${itemA.name}:${versionALabel}:${versionBLabel}`;
+    const chartDatasets = buildComparisonDatasets(itemA, itemB, versionALabel, versionBLabel);
+    const expandButton = createExpandButton(`Expand comparison chart for ${itemA.name}`, () => {
+        openExpandedChart({
+            key: chartKey,
+            title: `${itemA.name} Comparison`,
+            subtitle: `${category} · ${versionALabel} vs ${versionBLabel}`,
+            datasets: chartDatasets
+        }, expandButton);
+    });
+
+    container.appendChild(createChartHeader(chartTitle, expandButton));
 
     const canvas = document.createElement('canvas');
     canvas.id = `compare-${category.replace(/\s/g, '-')}-${itemA.name.replace(/\s/g, '-')}`;
@@ -390,40 +656,17 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
 
     container.appendChild(statsDiv);
 
-    const ctx = canvas.getContext('2d');
+    createChartInstance(canvas, chartDatasets);
 
-    const datasets = [
-        {
-            label: versionALabel,
-            data: generateDistributionData(itemA.default, window.clampEnabled || false),
-            borderColor: versionColors.versionA.border,
-            backgroundColor: versionColors.versionA.bg,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            customData: itemA.default
-        },
-        {
-            label: versionBLabel,
-            data: generateDistributionData(itemB.default, window.clampEnabled || false),
-            borderColor: versionColors.versionB.border,
-            backgroundColor: versionColors.versionB.bg,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            customData: itemB.default
-        }
-    ];
-
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: { datasets },
-        options: createChartOptions(window.clampEnabled || false)
-    });
-
-    charts.push(chart);
+    if (window.__restoreExpandedChartKey === chartKey) {
+        window.__restoreExpandedChartKey = null;
+        openExpandedChart({
+            key: chartKey,
+            title: `${itemA.name} Comparison`,
+            subtitle: `${category} · ${versionALabel} vs ${versionBLabel}`,
+            datasets: chartDatasets
+        }, expandButton);
+    }
 
     return container;
 }

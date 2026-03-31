@@ -135,6 +135,15 @@ function getOverrideTypes(item) {
 }
 
 // Create tooltip callbacks
+function getProbabilityDecimals() {
+    const decimals = Number(window.probabilityDecimals ?? 2);
+    if (!Number.isFinite(decimals)) {
+        return 2;
+    }
+
+    return Math.max(0, Math.min(6, Math.round(decimals)));
+}
+
 function createTooltipCallbacks(clampEnabled = false) {
     return {
         title: function (context) {
@@ -159,7 +168,7 @@ function createTooltipCallbacks(clampEnabled = false) {
                 } else {
                     prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
                 }
-                probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(2)}%`;
+                probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(getProbabilityDecimals())}%`;
             }
 
             return `${distName}: ${densityValue.toFixed(6)}${probText}`;
@@ -200,10 +209,11 @@ function createChartScales() {
 }
 
 // Create chart options
-function createChartOptions(clampEnabled = false) {
-    return {
+function createChartOptions(clampEnabled = false, overrides = {}) {
+    const defaultOptions = {
         responsive: true,
         maintainAspectRatio: true,
+        aspectRatio: 2,
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -222,6 +232,28 @@ function createChartOptions(clampEnabled = false) {
             mode: 'nearest',
             axis: 'x',
             intersect: false
+        }
+    };
+
+    return {
+        ...defaultOptions,
+        ...overrides,
+        plugins: {
+            ...defaultOptions.plugins,
+            ...(overrides.plugins || {}),
+            legend: {
+                ...defaultOptions.plugins.legend,
+                ...((overrides.plugins && overrides.plugins.legend) || {})
+            },
+            tooltip: {
+                ...defaultOptions.plugins.tooltip,
+                ...((overrides.plugins && overrides.plugins.tooltip) || {})
+            }
+        },
+        scales: overrides.scales || defaultOptions.scales,
+        interaction: {
+            ...defaultOptions.interaction,
+            ...(overrides.interaction || {})
         }
     };
 }
