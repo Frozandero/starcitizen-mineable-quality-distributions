@@ -1,17 +1,159 @@
 {
   "Common": [
     {
-      "name": "Unknown",
+      "name": "Aluminium",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Aluminium",
           "min": 40,
-          "max": 100,
+          "max": 80,
           "qualityScale": 1
         },
         {
-          "mineral": "Unknown",
+          "mineral": "Corundum",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Copper",
+      "compositions": [
+        {
+          "mineral": "Copper",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Tin",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Corundum",
+      "compositions": [
+        {
+          "mineral": "Corundum",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Aluminium",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Hephaestanite",
+      "compositions": [
+        {
+          "mineral": "Hephaestanite",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Quartz",
           "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Silicon",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Ice",
+      "compositions": [
+        {
+          "mineral": "Ice",
+          "min": 50,
+          "max": 100,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Iron",
+      "compositions": [
+        {
+          "mineral": "Iron",
+          "min": 50,
+          "max": 100,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Quartz",
+      "compositions": [
+        {
+          "mineral": "Quartz",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Hephaestanite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Silicon",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Silicon",
+      "compositions": [
+        {
+          "mineral": "Silicon",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Hephaestanite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Quartz",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Tin",
+      "compositions": [
+        {
+          "mineral": "Tin",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Copper",
+          "min": 10,
           "max": 20,
           "qualityScale": 1
         }
@@ -20,24 +162,115 @@
   ],
   "Uncommon": [
     {
-      "name": "Unknown",
+      "name": "Agricium",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Agricium",
           "min": 40,
-          "max": 100,
+          "max": 80,
           "qualityScale": 1
         },
         {
-          "mineral": "Unknown",
-          "min": 5,
-          "max": 20,
-          "qualityScale": 1
-        },
-        {
-          "mineral": "Unknown",
+          "mineral": "Titanium",
           "min": 5,
           "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Aslarite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Aslarite",
+      "compositions": [
+        {
+          "mineral": "Aslarite",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Titanium",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Agricium",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Laranite",
+      "compositions": [
+        {
+          "mineral": "Laranite",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Tungsten",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Titanium",
+      "compositions": [
+        {
+          "mineral": "Titanium",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Aslarite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Agricium",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Torite",
+      "compositions": [
+        {
+          "mineral": "Torite",
+          "min": 50,
+          "max": 100,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Tungsten",
+      "compositions": [
+        {
+          "mineral": "Tungsten",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Laranite",
+          "min": 10,
+          "max": 20,
           "qualityScale": 1
         }
       ]
@@ -45,11 +278,91 @@
   ],
   "Rare": [
     {
-      "name": "Unknown",
+      "name": "Beryl",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Beryl",
+          "min": 50,
+          "max": 100,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Bexalite",
+      "compositions": [
+        {
+          "mineral": "Bexalite",
           "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Gold",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Borase",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Borase",
+      "compositions": [
+        {
+          "mineral": "Borase",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Gold",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Bexalite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Gold",
+      "compositions": [
+        {
+          "mineral": "Gold",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Borase",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Bexalite",
+          "min": 5,
+          "max": 10,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Taranite",
+      "compositions": [
+        {
+          "mineral": "Taranite",
+          "min": 50,
           "max": 100,
           "qualityScale": 1
         }
@@ -58,16 +371,50 @@
   ],
   "Epic": [
     {
-      "name": "Unknown",
+      "name": "Lindinium",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Lindinium",
           "min": 40,
           "max": 80,
           "qualityScale": 1
         },
         {
-          "mineral": "Unknown",
+          "mineral": "Tungsten",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Ouratite",
+      "compositions": [
+        {
+          "mineral": "Ouratite",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Agricium",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Riccite",
+      "compositions": [
+        {
+          "mineral": "Riccite",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Laranite",
           "min": 10,
           "max": 20,
           "qualityScale": 1
@@ -77,16 +424,50 @@
   ],
   "Legendary": [
     {
-      "name": "Unknown",
+      "name": "Quantainium",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Quantainium",
           "min": 40,
           "max": 80,
           "qualityScale": 1
         },
         {
-          "mineral": "Unknown",
+          "mineral": "Beryl",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Savrilium",
+      "compositions": [
+        {
+          "mineral": "Savrilium",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Gold",
+          "min": 10,
+          "max": 20,
+          "qualityScale": 1
+        }
+      ]
+    },
+    {
+      "name": "Sileron",
+      "compositions": [
+        {
+          "mineral": "Sileron",
+          "min": 40,
+          "max": 80,
+          "qualityScale": 1
+        },
+        {
+          "mineral": "Taranite",
           "min": 10,
           "max": 20,
           "qualityScale": 1
@@ -96,16 +477,16 @@
   ],
   "RCD": [
     {
-      "name": "Unknown",
+      "name": "Savrilium",
       "compositions": [
         {
-          "mineral": "Unknown",
+          "mineral": "Savrilium",
           "min": 40,
           "max": 80,
           "qualityScale": 1
         },
         {
-          "mineral": "Unknown",
+          "mineral": "Torite",
           "min": 10,
           "max": 20,
           "qualityScale": 1
