@@ -254,7 +254,7 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
                     <div class="info-box">
                     <strong>Rock Cracker Distributions (RCD)</strong> - These are special quality distributions for Rock Cracker Device (RCD) in Nyx. 
                     RCD applies to non-Torite nodes in RCD locations. Torite Override applies specifically to Torite rocks in RCD locations.
-                    The values shown are averages across all RCD locations in game.
+                    Each line shown here is a distinct distribution group found in the game files rather than an average across locations.
                 </div>
                 
                 <div class="rarity-grid" id="rcd-grid"></div>

@@ -163,7 +163,10 @@
           "mean": 120,
           "min": 404,
           "max": 1000,
-          "stddev": 259
+          "stddev": 259,
+          "label": "RCD",
+          "baseType": "rcd",
+          "locationCount": 22
         },
         "improvement": 0
       }
@@ -175,7 +178,10 @@
           "mean": 137,
           "min": 414,
           "max": 1000,
-          "stddev": 257
+          "stddev": 257,
+          "label": "Torite",
+          "baseType": "torite",
+          "locationCount": 22
         },
         "improvement": 0
       }

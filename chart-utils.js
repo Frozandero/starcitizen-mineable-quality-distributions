@@ -17,6 +17,19 @@ const overrideColors = {
     carinite: { border: 'rgba(255, 100, 200, 0.9)', bg: 'rgba(255, 100, 200, 0.15)', label: 'Carinite' }
 };
 
+const groupedOverrideColors = {
+    rcd: [
+        { border: 'rgba(50, 150, 255, 0.95)', bg: 'rgba(50, 150, 255, 0.18)' },
+        { border: 'rgba(140, 205, 255, 0.95)', bg: 'rgba(140, 205, 255, 0.14)' },
+        { border: 'rgba(0, 110, 210, 0.95)', bg: 'rgba(0, 110, 210, 0.14)' }
+    ],
+    torite: [
+        { border: 'rgba(255, 200, 50, 0.95)', bg: 'rgba(255, 200, 50, 0.18)' },
+        { border: 'rgba(255, 225, 120, 0.95)', bg: 'rgba(255, 225, 120, 0.14)' },
+        { border: 'rgba(220, 160, 0, 0.95)', bg: 'rgba(220, 160, 0, 0.14)' }
+    ]
+};
+
 const versionColors = {
     versionA: { border: 'rgba(100, 150, 255, 0.9)', bg: 'rgba(100, 150, 255, 0.15)', label: 'Version A' },
     versionB: { border: 'rgba(255, 100, 100, 0.9)', bg: 'rgba(255, 100, 100, 0.15)', label: 'Version B' }
@@ -81,6 +94,12 @@ function probabilityGreaterThanClamped(x, mean, stddev, minVal, maxVal) {
     return normalizedProb;
 }
 
+function getClampedProbabilityMass(mean, stddev, minVal, maxVal) {
+    const probAtMax = normalDistributionCDF(maxVal, mean, stddev);
+    const probAtMin = normalDistributionCDF(minVal, mean, stddev);
+    return probAtMax - probAtMin;
+}
+
 // Probability that X > x (for unclamped distributions)
 function probabilityGreaterThan(x, mean, stddev, maxVal) {
     const zScore = (x - mean) / stddev;
@@ -100,14 +119,18 @@ function generateDistributionData(dist, clamp = false) {
     const data = [];
     const xMin = 1; // Always start from 1 for proper Chart.js alignment
     const xMax = 1000; // Always keep x-axis at 1-1000
+    const clampedProbabilityMass = clamp
+        ? getClampedProbabilityMass(dist.mean, dist.stddev, dist.min, dist.max)
+        : 1;
     
     for (let x = xMin; x <= xMax; x++) {
         let y = 0;
         
         if (clamp) {
-            // For clamped: show distribution only within min-max range, zero elsewhere
+            // For clamped charts, show the normalized truncated distribution.
             if (x >= dist.min && x <= dist.max) {
-                y = normalDistributionPDF(x, dist.mean, dist.stddev);
+                const rawDensity = normalDistributionPDF(x, dist.mean, dist.stddev);
+                y = clampedProbabilityMass > 0 ? rawDensity / clampedProbabilityMass : 0;
             }
             // Else y remains 0 (no density outside clamped range)
         } else {
@@ -117,21 +140,59 @@ function generateDistributionData(dist, clamp = false) {
             }
         }
         
-        data.push({ x: x, y: parseFloat(y.toFixed(6)) });
+        data.push({ x, y });
     }
     return data;
 }
 
 // Get override types for an item
+function isDistributionObject(value) {
+    return Boolean(
+        value &&
+        typeof value === 'object' &&
+        Number.isFinite(value.mean) &&
+        Number.isFinite(value.min) &&
+        Number.isFinite(value.max) &&
+        Number.isFinite(value.stddev)
+    );
+}
+
+function getDistributionBaseType(type, dist = null) {
+    if (dist?.baseType) {
+        return dist.baseType;
+    }
+
+    if (overrideColors[type]) {
+        return type;
+    }
+
+    const groupedMatch = type.match(/^(.*)_v\d+$/);
+    if (groupedMatch) {
+        return groupedMatch[1];
+    }
+
+    return type;
+}
+
+function getDistributionStyle(type, dist = null) {
+    const baseType = getDistributionBaseType(type, dist);
+    const variantMatch = type.match(/_v(\d+)$/);
+    const variantIndex = variantMatch ? Math.max(0, parseInt(variantMatch[1], 10) - 1) : null;
+    const groupedPalette = variantIndex !== null ? groupedOverrideColors[baseType] : null;
+    const groupedColor = groupedPalette ? groupedPalette[variantIndex % groupedPalette.length] : null;
+    const baseColor = overrideColors[baseType] || overrideColors[type] || { border: '#fff', bg: 'rgba(255,255,255,0.1)', label: type };
+
+    return {
+        label: dist?.label || baseColor.label || type,
+        border: groupedColor?.border || baseColor.border,
+        bg: groupedColor?.bg || baseColor.bg
+    };
+}
+
 function getOverrideTypes(item) {
-    const types = [];
-    if (item.default) types.push('default');
-    if (item.pyro) types.push('pyro');
-    if (item.rcd) types.push('rcd');
-    if (item.torite) types.push('torite');
-    if (item.nyx) types.push('nyx');
-    if (item.carinite) types.push('carinite');
-    return types.filter(t => t !== 'default');
+    return Object.entries(item)
+        .filter(([key, value]) => key !== 'name' && key !== 'improvement' && key !== 'default' && isDistributionObject(value))
+        .map(([key]) => key);
 }
 
 // Create tooltip callbacks
@@ -194,7 +255,7 @@ function createChartScales() {
             grid: { color: 'rgba(255,255, 255, 0.05)' }
         },
         y: {
-            beginAtZero: false,
+            beginAtZero: true,
             display: true,
             title: {
                 display: true,

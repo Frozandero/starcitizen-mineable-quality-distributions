@@ -83,11 +83,12 @@ function buildSingleViewDatasets(item) {
     }
 
     for (const type of overrideTypesPresent) {
+        const style = getDistributionStyle(type, item[type]);
         datasets.push({
-            label: overrideColors[type]?.label || type,
+            label: style.label,
             data: generateDistributionData(item[type], window.clampEnabled || false),
-            borderColor: overrideColors[type]?.border || '#fff',
-            backgroundColor: overrideColors[type]?.bg || 'rgba(255,255,255,0.1)',
+            borderColor: style.border,
+            backgroundColor: style.bg,
             borderWidth: 2,
             fill: true,
             tension: 0.4,
@@ -296,16 +297,19 @@ function createCategorySection(categoryData, rockData = null) {
         chartTitle.textContent = item.name;
 
         const overrideTypes = getOverrideTypes(item);
-        let badges = '<span class="badge badge-default">Default</span>';
+        let badges = item.default ? '<span class="badge badge-default">Default</span>' : '';
         for (const type of overrideTypes) {
-            badges += ` <span class="badge badge-${type}" style="background: ${overrideColors[type]?.bg || 'rgba(255,255,255,0.1)'}; border: 1px solid ${overrideColors[type]?.border || 'rgba(255,255,255,0.3)'}; color: #fff">${overrideColors[type]?.label || type}</span>`;
+            const style = getDistributionStyle(type, item[type]);
+            badges += `${badges ? ' ' : ''}<span class="badge badge-${type}" style="background: ${style.bg}; border: 1px solid ${style.border}; color: #fff">${style.label}</span>`;
         }
 
-        const badgesWrapper = document.createElement('span');
-        badgesWrapper.className = 'chart-title-badges';
-        badgesWrapper.innerHTML = badges;
-        chartTitle.appendChild(document.createTextNode(' '));
-        chartTitle.appendChild(badgesWrapper);
+        if (badges) {
+            const badgesWrapper = document.createElement('span');
+            badgesWrapper.className = 'chart-title-badges';
+            badgesWrapper.innerHTML = badges;
+            chartTitle.appendChild(document.createTextNode(' '));
+            chartTitle.appendChild(badgesWrapper);
+        }
 
         let titleContent = chartTitle;
 
@@ -362,6 +366,7 @@ function createCategorySection(categoryData, rockData = null) {
         statsDiv.className = 'stats-grid';
 
         let statsHtml = '';
+        const showDetailedOverrideStats = !item.default || overrideTypes.length > 1;
 
         if (item.default) {
             statsHtml += `
@@ -372,14 +377,54 @@ function createCategorySection(categoryData, rockData = null) {
             `;
         }
 
-        for (const type of overrideTypes) {
-            const color = overrideColors[type]?.border || '#fff';
-            statsHtml += `
-                <div class="stat-card">
-                    <div class="stat-label">${overrideColors[type]?.label || type} Mean</div>
-                    <div class="stat-value" style="color: ${color}">${item[type].mean}</div>
-                </div>
-            `;
+        if (showDetailedOverrideStats && overrideTypes.length > 1) {
+            const detailedStatTypes = [
+                { key: 'mean', labelSuffix: 'Mean', valueStyle: '' },
+                { key: 'stddev', labelSuffix: 'StdDev', valueStyle: '' },
+                { key: 'range', labelSuffix: 'Range', valueStyle: 'font-size: 1rem;' }
+            ];
+
+            for (const statType of detailedStatTypes) {
+                for (const type of overrideTypes) {
+                    const style = getDistributionStyle(type, item[type]);
+                    const statValue = statType.key === 'range'
+                        ? `${item[type].min} - ${item[type].max}`
+                        : item[type][statType.key];
+
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">${style.label} ${statType.labelSuffix}</div>
+                            <div class="stat-value" style="${statType.valueStyle} color: ${style.border}">${statValue}</div>
+                        </div>
+                    `;
+                }
+            }
+        } else {
+            for (const type of overrideTypes) {
+                const style = getDistributionStyle(type, item[type]);
+                statsHtml += `
+                    <div class="stat-card">
+                        <div class="stat-label">${style.label} Mean</div>
+                        <div class="stat-value" style="color: ${style.border}">${item[type].mean}</div>
+                    </div>
+                `;
+
+                if (showDetailedOverrideStats || ['rcd', 'torite'].includes(getDistributionBaseType(type, item[type]))) {
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">${style.label} StdDev</div>
+                            <div class="stat-value" style="color: ${style.border}">${item[type].stddev}</div>
+                        </div>
+                    `;
+
+                    statsHtml += `
+                        <div class="stat-card">
+                            <div class="stat-label">${style.label} Range</div>
+                            <div class="stat-value" style="font-size: 1rem; color: ${style.border}">${item[type].min} - ${item[type].max}</div>
+                        </div>
+                    `;
+                }
+            }
         }
 
         if (item.improvement) {
@@ -407,22 +452,24 @@ function createCategorySection(categoryData, rockData = null) {
             }
         }
 
-        let minVal = '?';
-        if (item.default) {
-            minVal = item.default.min;
-        } else if (overrideTypes.length > 0) {
-            minVal = item[overrideTypes[0]].min;
-        }
+        if (!showDetailedOverrideStats) {
+            let minVal = '?';
+            if (item.default) {
+                minVal = item.default.min;
+            } else if (overrideTypes.length > 0) {
+                minVal = item[overrideTypes[0]].min;
+            }
 
-        statsHtml += `
-            <div class="stat-card">
-                <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
-                    Quality Range
-                    <span class="tooltip-icon" title="The low end of this range is theoretical based on normal distribution. It might not be used by game currently.">?</span>
+            statsHtml += `
+                <div class="stat-card">
+                    <div class="stat-label" style="display: flex; align-items: center; gap: 5px;">
+                        Quality Range
+                        <span class="tooltip-icon" title="The low end of this range is theoretical based on normal distribution. It might not be used by game currently.">?</span>
+                    </div>
+                    <div class="stat-value" style="font-size: 1rem">${minVal} - 1000</div>
                 </div>
-                <div class="stat-value" style="font-size: 1rem">${minVal} - 1000</div>
-            </div>
-        `;
+            `;
+        }
 
         statsDiv.innerHTML = statsHtml;
         container.appendChild(statsDiv);

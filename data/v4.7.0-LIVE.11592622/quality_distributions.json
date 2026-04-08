@@ -167,9 +167,12 @@
         "name": "Legendary",
         "rcd": {
           "mean": 100,
-          "min": 501,
+          "min": 651,
           "max": 1000,
-          "stddev": 191
+          "stddev": 190,
+          "label": "RCD",
+          "baseType": "rcd",
+          "locationCount": 62
         },
         "improvement": 0
       }
@@ -177,11 +180,23 @@
     "torite": [
       {
         "name": "Uncommon",
-        "torite": {
-          "mean": 99,
+        "torite_v1": {
+          "mean": 100,
           "min": 651,
           "max": 1000,
-          "stddev": 191
+          "stddev": 190,
+          "label": "Torite v1",
+          "baseType": "torite",
+          "locationCount": 40
+        },
+        "torite_v2": {
+          "mean": 97,
+          "min": 651,
+          "max": 1000,
+          "stddev": 193,
+          "label": "Torite v2",
+          "baseType": "torite",
+          "locationCount": 22
         },
         "improvement": 0
       }
