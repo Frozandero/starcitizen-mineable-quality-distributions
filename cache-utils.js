@@ -2,24 +2,71 @@
 
 const CACHE_PREFIX = 'sc_quality_distro_';
 const BUILD_NONCE_KEY = 'build_nonce';
+const BUILD_INFO_KEY = 'build_info';
+let buildInfoPromise = null;
 
 // Get the current build nonce from the HTML
 function getBuildNonce() {
     return window.BUILD_NONCE || null;
 }
 
+function getVersionedFetchUrl(fetchUrl, buildNonce = getBuildNonce()) {
+    const separator = fetchUrl.includes('?') ? '&' : '?';
+    return buildNonce ? `${fetchUrl}${separator}v=${encodeURIComponent(buildNonce)}` : fetchUrl;
+}
+
+async function getLatestBuildInfo() {
+    const response = await fetch(`./build.json?ts=${Date.now()}`, {
+        cache: 'no-store'
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch build.json: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+async function ensureFreshBuildInfo() {
+    if (!buildInfoPromise) {
+        buildInfoPromise = (async () => {
+            try {
+                const latestBuildInfo = await getLatestBuildInfo();
+                const cachedBuildInfoRaw = localStorage.getItem(CACHE_PREFIX + BUILD_INFO_KEY);
+                const cachedBuildInfo = cachedBuildInfoRaw ? JSON.parse(cachedBuildInfoRaw) : null;
+
+                if (!cachedBuildInfo || cachedBuildInfo.nonce !== latestBuildInfo.nonce) {
+                    clearCache();
+                    localStorage.setItem(CACHE_PREFIX + BUILD_INFO_KEY, JSON.stringify(latestBuildInfo));
+                    localStorage.setItem(CACHE_PREFIX + BUILD_NONCE_KEY, latestBuildInfo.nonce);
+                }
+
+                return latestBuildInfo;
+            } catch (error) {
+                console.warn('Unable to refresh build metadata, falling back to inline nonce.', error);
+                return {
+                    nonce: getBuildNonce()
+                };
+            } finally {
+                buildInfoPromise = null;
+            }
+        })();
+    }
+
+    return buildInfoPromise;
+}
+
 // Check if cached data is valid
 function isCacheValid() {
     const cachedNonce = localStorage.getItem(CACHE_PREFIX + BUILD_NONCE_KEY);
     const currentNonce = getBuildNonce();
-    return cachedNonce === currentNonce;
+    return !currentNonce || cachedNonce === currentNonce;
 }
 
 // Save build nonce
-function saveBuildNonce() {
-    const currentNonce = getBuildNonce();
-    if (currentNonce) {
-        localStorage.setItem(CACHE_PREFIX + BUILD_NONCE_KEY, currentNonce);
+function saveBuildNonce(buildNonce = getBuildNonce()) {
+    if (buildNonce) {
+        localStorage.setItem(CACHE_PREFIX + BUILD_NONCE_KEY, buildNonce);
     }
 }
 
@@ -42,10 +89,10 @@ function getCachedData(key) {
 }
 
 // Save data to cache
-function setCachedData(key, data) {
+function setCachedData(key, data, buildNonce = getBuildNonce()) {
     try {
         localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data));
-        saveBuildNonce();
+        saveBuildNonce(buildNonce);
     } catch (error) {
         console.error('Error saving to cache:', error);
         // If storage is full, try to clear old cache entries
@@ -53,7 +100,7 @@ function setCachedData(key, data) {
             clearCache();
             try {
                 localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data));
-                saveBuildNonce();
+                saveBuildNonce(buildNonce);
             } catch (retryError) {
                 console.error('Failed to save to cache even after cleanup:', retryError);
             }
@@ -102,25 +149,34 @@ function logCacheStats() {
     const cacheSize = getCacheSize();
     const buildNonce = getBuildNonce();
     const isValid = isCacheValid();
+    const buildInfo = localStorage.getItem(CACHE_PREFIX + BUILD_INFO_KEY);
     
     console.log('=== Cache Statistics ===');
     console.log(`Cache size: ${formatCacheSize(cacheSize)}`);
     console.log(`Build nonce: ${buildNonce}`);
+    console.log(`Stored build info: ${buildInfo || 'none'}`);
     console.log(`Cache valid: ${isValid}`);
     console.log(`Storage available: ${formatCacheSize(5 * 1024 * 1024 - cacheSize)} (approx)`);
 }
 
 // Load data with cache fallback
 async function loadDataWithCache(fetchUrl, cacheKey) {
+    const latestBuildInfo = await ensureFreshBuildInfo();
+    const effectiveNonce = latestBuildInfo?.nonce || getBuildNonce();
+    const effectiveCacheKey = effectiveNonce ? `${cacheKey}_${effectiveNonce}` : cacheKey;
+
     // Try to get from cache first
-    const cachedData = getCachedData(cacheKey);
+    const cachedData = getCachedData(effectiveCacheKey);
     if (cachedData) {
         return cachedData;
     }
 
     // Fetch from network
-    console.log(`Fetching from network: ${fetchUrl}`);
-    const response = await fetch(fetchUrl);
+    const versionedFetchUrl = getVersionedFetchUrl(fetchUrl, effectiveNonce);
+    console.log(`Fetching from network: ${versionedFetchUrl}`);
+    const response = await fetch(versionedFetchUrl, {
+        cache: 'no-store'
+    });
     
     if (!response.ok) {
         throw new Error(`Failed to fetch ${fetchUrl}: ${response.status} ${response.statusText}`);
@@ -129,7 +185,7 @@ async function loadDataWithCache(fetchUrl, cacheKey) {
     const data = await response.json();
     
     // Cache the response
-    setCachedData(cacheKey, data);
+    setCachedData(effectiveCacheKey, data, effectiveNonce);
     
     return data;
 }
@@ -160,5 +216,6 @@ window.cacheUtils = {
     formatCacheSize,
     logCacheStats,
     loadDataWithCache,
-    preloadCache
+    preloadCache,
+    ensureFreshBuildInfo
 };
