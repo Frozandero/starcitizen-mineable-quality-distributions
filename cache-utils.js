@@ -193,12 +193,13 @@ async function loadDataWithCache(fetchUrl, cacheKey) {
 // Preload and cache multiple data files
 async function preloadCache(versionId) {
     try {
-        const [qualityData, rockData] = await Promise.all([
+        const [qualityData, rockData, quantizationData] = await Promise.all([
             loadDataWithCache(`./data/${versionId}/quality_distributions.json`, `${versionId}_quality`),
-            loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`)
+            loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`),
+            loadDataWithCache(`./data/${versionId}/quality_quantization.json`, `${versionId}_quality_quantization`).catch(() => null)
         ]);
 
-        return { qualityData, rockData };
+        return { qualityData, rockData, quantizationData };
     } catch (error) {
         console.error('Error preloading cache:', error);
         throw error;

@@ -46,6 +46,18 @@ function preserveExpandedChart() {
     }
 }
 
+function createQuantizationChartOptionOverrides(quantizationOverlay) {
+    return {
+        plugins: {
+            qualityQuantizationOverlay: {
+                enabled: Boolean(quantizationOverlay?.bands?.length),
+                bands: quantizationOverlay?.bands || [],
+                materialCount: quantizationOverlay?.materialCount || 0
+            }
+        }
+    };
+}
+
 function lockBodyScroll() {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     bodyScrollPaddingRight = document.body.style.paddingRight;
@@ -230,6 +242,8 @@ function openExpandedChart(config, triggerButton) {
     elements.modal.hidden = false;
     lockBodyScroll();
 
+    const quantizationOptions = createQuantizationChartOptionOverrides(config.quantizationOverlay);
+
     expandedChart = new Chart(elements.canvas.getContext('2d'), {
         type: 'line',
         data: {
@@ -238,6 +252,7 @@ function openExpandedChart(config, triggerButton) {
         options: createChartOptions(window.clampEnabled || false, {
             maintainAspectRatio: false,
             aspectRatio: undefined,
+            plugins: quantizationOptions.plugins,
             interaction: {
                 mode: 'nearest',
                 axis: 'x',
@@ -273,6 +288,30 @@ function createChartHeader(titleContent, expandButton) {
     header.appendChild(titleArea);
     header.appendChild(expandButton);
     return header;
+}
+
+const CATEGORY_QUANTIZATION_MATERIALS = {
+    'Ground Mineables': ['Beradom', 'Carinite', 'Feynmaline', 'Glacosite'],
+    'FPS Mineables': ['Aphorite', 'Dolivine', 'Hadanite', 'Jaclium', 'Janalite', 'Sadaryx', 'Saldynium'],
+    'RCD (Non-Torite)': ['Savrilium'],
+    'Torite Only': ['Torite']
+};
+
+function getQuantizationOverlayForItem(category, item, rockData = null) {
+    if (!hasQualityQuantizationData(window.currentQualityQuantization)) {
+        return null;
+    }
+
+    let materialNames = null;
+    if (category === 'Ship Mineables' && rockData && Array.isArray(rockData[item.name])) {
+        materialNames = rockData[item.name].map((rock) => rock.name);
+    } else if (CATEGORY_QUANTIZATION_MATERIALS[category]) {
+        materialNames = CATEGORY_QUANTIZATION_MATERIALS[category];
+    } else {
+        return null;
+    }
+
+    return createQualityQuantizationOverlay(window.currentQualityQuantization, materialNames);
 }
 
 // Create category section for quality distributions
@@ -347,12 +386,14 @@ function createCategorySection(categoryData, rockData = null) {
 
         const chartKey = `single:${categoryData.category}:${item.name}`;
         const chartDatasets = buildSingleViewDatasets(item);
+        const quantizationOverlay = getQuantizationOverlayForItem(categoryData.category, item, rockData);
         const expandButton = createExpandButton(`Expand chart for ${item.name}`, () => {
             openExpandedChart({
                 key: chartKey,
                 title: `${item.name} Quality Distribution`,
                 subtitle: `${categoryData.category} · ${chartDatasets.map((dataset) => dataset.label).join(' vs ')}`,
-                datasets: chartDatasets
+                datasets: chartDatasets,
+                quantizationOverlay
             }, expandButton);
         });
 
@@ -479,7 +520,7 @@ function createCategorySection(categoryData, rockData = null) {
         const hasAnyData = (item.default && overrideTypesPresent.length > 0) || overrideTypesPresent.length > 0;
 
         if (hasAnyData) {
-            createChartInstance(canvas, chartDatasets);
+            createChartInstance(canvas, chartDatasets, createQuantizationChartOptionOverrides(quantizationOverlay));
 
             if (window.__restoreExpandedChartKey === chartKey) {
                 window.__restoreExpandedChartKey = null;
@@ -487,7 +528,8 @@ function createCategorySection(categoryData, rockData = null) {
                     key: chartKey,
                     title: `${item.name} Quality Distribution`,
                     subtitle: `${categoryData.category} · ${chartDatasets.map((dataset) => dataset.label).join(' vs ')}`,
-                    datasets: chartDatasets
+                    datasets: chartDatasets,
+                    quantizationOverlay
                 }, expandButton);
             }
         }
@@ -570,6 +612,100 @@ function createRarityCard(rarity, rocks) {
     return card;
 }
 
+function hasQualityQuantizationData(qualityQuantization) {
+    return Boolean(
+        qualityQuantization &&
+        Array.isArray(qualityQuantization.materials) &&
+        qualityQuantization.materials.length > 0
+    );
+}
+
+function createQualityQuantizationSection(qualityQuantization, options = {}) {
+    if (!hasQualityQuantizationData(qualityQuantization)) {
+        return null;
+    }
+
+    const section = document.createElement('div');
+    section.className = 'quantization-section';
+
+    const title = document.createElement('h2');
+    title.className = 'category-title';
+    title.textContent = options.title || 'Quality Quantization Bands';
+    section.appendChild(title);
+
+    const infoBox = document.createElement('div');
+    infoBox.className = 'info-box';
+    infoBox.innerHTML = `
+        <strong>Quality Quantization:</strong> Raw quality rolls still use the distributions above, then each material maps
+        the raw roll into these fixed output quality values. Column headers are raw quality bands and each cell is the
+        final inventory quality for that material.
+    `;
+    section.appendChild(infoBox);
+
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'quantization-table-wrapper';
+
+    const table = document.createElement('table');
+    table.className = 'quantization-table';
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    const materialHeader = document.createElement('th');
+    materialHeader.textContent = 'Material';
+    headerRow.appendChild(materialHeader);
+
+    const bandRanges = qualityQuantization.bandRanges && qualityQuantization.bandRanges.length > 0
+        ? qualityQuantization.bandRanges
+        : qualityQuantization.materials[0].bands.map((band) => ({ start: band.start, end: band.end }));
+
+    for (const bandRange of bandRanges) {
+        const th = document.createElement('th');
+        th.textContent = `${bandRange.start}-${bandRange.end}`;
+        headerRow.appendChild(th);
+    }
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    for (const material of qualityQuantization.materials) {
+        const row = document.createElement('tr');
+
+        const materialCell = document.createElement('td');
+        materialCell.className = 'quantization-material-name';
+        materialCell.textContent = material.name;
+        row.appendChild(materialCell);
+
+        for (const bandRange of bandRanges) {
+            const band = material.bands.find((item) => item.start === bandRange.start && item.end === bandRange.end);
+            const cell = document.createElement('td');
+            cell.className = 'quantization-band-cell';
+
+            if (band) {
+                const mappedValue = document.createElement('span');
+                mappedValue.className = 'quantization-mapped-value';
+                mappedValue.textContent = band.mappedValue;
+                cell.appendChild(mappedValue);
+            } else {
+                cell.classList.add('quantization-empty');
+                cell.textContent = '-';
+            }
+
+            row.appendChild(cell);
+        }
+
+        tbody.appendChild(row);
+    }
+
+    table.appendChild(tbody);
+    tableWrapper.appendChild(table);
+    section.appendChild(tableWrapper);
+
+    return section;
+}
+
 // Create comparison summary table
 function createComparisonSummaryTable(qualityDataA, qualityDataB, versionALabel, versionBLabel) {
     const section = document.createElement('div');
@@ -637,7 +773,7 @@ function createComparisonSummaryTable(qualityDataA, qualityDataB, versionALabel,
 }
 
 // Create comparison chart section
-function createComparisonChartSection(category, itemA, itemB, versionALabel, versionBLabel) {
+function createComparisonChartSection(category, itemA, itemB, versionALabel, versionBLabel, rockData = null) {
     const container = document.createElement('div');
     container.className = 'chart-container';
 
@@ -653,12 +789,14 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
 
     const chartKey = `compare:${category}:${itemA.name}:${versionALabel}:${versionBLabel}`;
     const chartDatasets = buildComparisonDatasets(itemA, itemB, versionALabel, versionBLabel);
+    const quantizationOverlay = getQuantizationOverlayForItem(category, itemA, rockData);
     const expandButton = createExpandButton(`Expand comparison chart for ${itemA.name}`, () => {
         openExpandedChart({
             key: chartKey,
             title: `${itemA.name} Comparison`,
             subtitle: `${category} · ${versionALabel} vs ${versionBLabel}`,
-            datasets: chartDatasets
+            datasets: chartDatasets,
+            quantizationOverlay
         }, expandButton);
     });
 
@@ -703,7 +841,7 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
 
     container.appendChild(statsDiv);
 
-    createChartInstance(canvas, chartDatasets);
+    createChartInstance(canvas, chartDatasets, createQuantizationChartOptionOverrides(quantizationOverlay));
 
     if (window.__restoreExpandedChartKey === chartKey) {
         window.__restoreExpandedChartKey = null;
@@ -711,7 +849,8 @@ function createComparisonChartSection(category, itemA, itemB, versionALabel, ver
             key: chartKey,
             title: `${itemA.name} Comparison`,
             subtitle: `${category} · ${versionALabel} vs ${versionBLabel}`,
-            datasets: chartDatasets
+            datasets: chartDatasets,
+            quantizationOverlay
         }, expandButton);
     }
 

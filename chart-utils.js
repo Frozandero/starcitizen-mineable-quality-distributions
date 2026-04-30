@@ -35,6 +35,154 @@ const versionColors = {
     versionB: { border: 'rgba(255, 100, 100, 0.9)', bg: 'rgba(255, 100, 100, 0.15)', label: 'Version B' }
 };
 
+function normalizeMaterialName(name) {
+    return String(name || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+}
+
+function formatMappedValueLabel(band) {
+    if (!band) {
+        return '';
+    }
+
+    return band.mappedMin === band.mappedMax
+        ? String(band.mappedMin)
+        : `${band.mappedMin}-${band.mappedMax}`;
+}
+
+function createQualityQuantizationOverlay(qualityQuantization, materialNames = null) {
+    if (!qualityQuantization?.materials?.length) {
+        return null;
+    }
+
+    const requestedNames = Array.isArray(materialNames)
+        ? materialNames.map(normalizeMaterialName).filter(Boolean)
+        : [];
+    const requestedSet = new Set(requestedNames);
+
+    const selectedMaterials = requestedSet.size > 0
+        ? qualityQuantization.materials.filter((material) => requestedSet.has(normalizeMaterialName(material.name)))
+        : qualityQuantization.materials;
+
+    if (requestedSet.size > 0 && selectedMaterials.length === 0) {
+        return null;
+    }
+
+    const materials = selectedMaterials;
+    const bandRanges = qualityQuantization.bandRanges?.length
+        ? qualityQuantization.bandRanges
+        : materials[0].bands.map((band) => ({ start: band.start, end: band.end }));
+
+    const bands = bandRanges.map((bandRange) => {
+        const mappedValues = materials
+            .map((material) => material.bands.find((band) => band.start === bandRange.start && band.end === bandRange.end)?.mappedValue)
+            .filter((mappedValue) => Number.isFinite(mappedValue));
+
+        if (mappedValues.length === 0) {
+            return null;
+        }
+
+        const mappedMin = Math.min(...mappedValues);
+        const mappedMax = Math.max(...mappedValues);
+
+        return {
+            start: bandRange.start,
+            end: bandRange.end,
+            mappedMin,
+            mappedMax,
+            materialCount: mappedValues.length
+        };
+    }).filter(Boolean);
+
+    return {
+        bands,
+        materialCount: materials.length
+    };
+}
+
+function findQuantizationBand(qualityValue, bands) {
+    if (!Array.isArray(bands)) {
+        return null;
+    }
+
+    return bands.find((band) => qualityValue >= band.start && qualityValue <= band.end) || null;
+}
+
+const qualityQuantizationOverlayPlugin = {
+    id: 'qualityQuantizationOverlay',
+    beforeDatasetsDraw(chart, args, options) {
+        if (!options?.enabled || !Array.isArray(options.bands) || options.bands.length === 0) {
+            return;
+        }
+
+        const { ctx, chartArea, scales } = chart;
+        const xScale = scales.x;
+
+        if (!chartArea || !xScale) {
+            return;
+        }
+
+        ctx.save();
+        options.bands.forEach((band, index) => {
+            const startX = Math.max(chartArea.left, xScale.getPixelForValue(Math.max(1, band.start)));
+            const endX = Math.min(chartArea.right, xScale.getPixelForValue(Math.min(1000, band.end)));
+            const width = Math.max(1, endX - startX);
+
+            ctx.fillStyle = index % 2 === 0
+                ? 'rgba(0, 217, 255, 0.035)'
+                : 'rgba(255, 193, 7, 0.035)';
+            ctx.fillRect(startX, chartArea.top, width, chartArea.bottom - chartArea.top);
+
+            ctx.strokeStyle = 'rgba(255, 193, 7, 0.22)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(startX, chartArea.top);
+            ctx.lineTo(startX, chartArea.bottom);
+            ctx.stroke();
+        });
+        ctx.restore();
+    },
+    afterDatasetsDraw(chart, args, options) {
+        if (!options?.enabled || !Array.isArray(options.bands) || options.bands.length === 0) {
+            return;
+        }
+
+        const { ctx, chartArea, scales } = chart;
+        const xScale = scales.x;
+
+        if (!chartArea || !xScale) {
+            return;
+        }
+
+        ctx.save();
+        ctx.font = '600 10px Rajdhani, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        options.bands.forEach((band) => {
+            const startX = Math.max(chartArea.left, xScale.getPixelForValue(Math.max(1, band.start)));
+            const endX = Math.min(chartArea.right, xScale.getPixelForValue(Math.min(1000, band.end)));
+            const width = endX - startX;
+
+            if (width < 34) {
+                return;
+            }
+
+            const centerX = startX + width / 2;
+            const label = formatMappedValueLabel(band);
+            ctx.fillStyle = 'rgba(255, 214, 95, 0.92)';
+            ctx.fillText(label, centerX, chartArea.top + 5);
+        });
+
+        ctx.restore();
+    }
+};
+
+if (typeof Chart !== 'undefined') {
+    Chart.register(qualityQuantizationOverlayPlugin);
+}
+
 // Normal distribution probability density function
 function normalDistributionPDF(x, mean, stddev) {
     const exponent = -0.5 * Math.pow((x - mean) / stddev, 2);
@@ -232,7 +380,16 @@ function createTooltipCallbacks(clampEnabled = false) {
                 probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(getProbabilityDecimals())}%`;
             }
 
-            return `${distName}: ${densityValue.toFixed(6)}${probText}`;
+            const quantizationOptions = context.chart?.options?.plugins?.qualityQuantizationOverlay;
+            let quantizationText = '';
+            if (quantizationOptions?.enabled) {
+                const band = findQuantizationBand(qualityValue, quantizationOptions.bands);
+                if (band) {
+                    quantizationText = `\nMapped quality: ${formatMappedValueLabel(band)}`;
+                }
+            }
+
+            return `${distName}: ${densityValue.toFixed(6)}${probText}${quantizationText}`;
         }
     };
 }

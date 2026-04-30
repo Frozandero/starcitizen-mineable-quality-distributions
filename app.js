@@ -6,6 +6,18 @@ let versionA = null;
 let versionB = null;
 let clampEnabled = true;
 
+async function loadOptionalVersionData(versionId, fileName, cacheKey, fallbackValue = null) {
+    try {
+        return await window.cacheUtils.loadDataWithCache(`./data/${versionId}/${fileName}`, cacheKey);
+    } catch (error) {
+        const message = String(error?.message || error);
+        if (!message.includes('404')) {
+            console.warn(`Optional data file could not be loaded: ${fileName}`, error);
+        }
+        return fallbackValue;
+    }
+}
+
 // Set view mode (single or compare)
 function setViewMode(mode) {
     viewMode = mode;
@@ -37,9 +49,10 @@ async function loadVersion(versionId) {
     content.innerHTML = '<div class="loading">Loading data...</div>';
 
     try {
-        const [qualityData, rockData] = await Promise.all([
+        const [qualityData, rockData, quantizationData] = await Promise.all([
             window.cacheUtils.loadDataWithCache(`./data/${versionId}/quality_distributions.json`, `${versionId}_quality`),
-            window.cacheUtils.loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`)
+            window.cacheUtils.loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`),
+            loadOptionalVersionData(versionId, 'quality_quantization.json', `${versionId}_quality_quantization`, null)
         ]);
 
         const qualityJson = qualityData;
@@ -48,7 +61,7 @@ async function loadVersion(versionId) {
         const qualityDistributions = qualityJson.categories || qualityJson;
         const rockCrackerData = qualityJson.rockCrackerDistributions || null;
 
-        renderContent(qualityDistributions, rockJson, rockCrackerData, versionId);
+        renderContent(qualityDistributions, rockJson, rockCrackerData, quantizationData, versionId);
     } catch (error) {
         console.error('Error loading version data:', error);
         content.innerHTML = '<div class="loading">Error loading data. Please try again.</div>';
@@ -66,11 +79,13 @@ async function loadComparison(versionIdA, versionIdB) {
     }
 
     try {
-        const [qualityDataA, rockDataA, qualityDataB, rockDataB] = await Promise.all([
+        const [qualityDataA, rockDataA, quantizationDataA, qualityDataB, rockDataB, quantizationDataB] = await Promise.all([
             window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/quality_distributions.json`, `${versionIdA}_quality`),
             window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/rock_compositions.json`, `${versionIdA}_rock`),
+            loadOptionalVersionData(versionIdA, 'quality_quantization.json', `${versionIdA}_quality_quantization`, null),
             window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/quality_distributions.json`, `${versionIdB}_quality`),
-            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/rock_compositions.json`, `${versionIdB}_rock`)
+            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/rock_compositions.json`, `${versionIdB}_rock`),
+            loadOptionalVersionData(versionIdB, 'quality_quantization.json', `${versionIdB}_quality_quantization`, null)
         ]);
 
         const qualityDistributionsA = qualityDataA.categories || qualityDataA;
@@ -79,7 +94,7 @@ async function loadComparison(versionIdA, versionIdB) {
         versionA = versionIdA;
         versionB = versionIdB;
 
-        renderComparisonContent(qualityDistributionsA, rockDataA, qualityDistributionsB, rockDataB, versionIdA, versionIdB);
+        renderComparisonContent(qualityDistributionsA, rockDataA, quantizationDataA, qualityDistributionsB, rockDataB, quantizationDataB, versionIdA, versionIdB);
     } catch (error) {
         console.error('Error loading comparison data:', error);
         content.innerHTML = `<div class="loading">Error loading comparison data: ${error.message}. Please try again.</div>`;
@@ -87,9 +102,10 @@ async function loadComparison(versionIdA, versionIdB) {
 }
 
 // Render comparison content (new function)
-function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockDataB, versionIdA, versionIdB) {
+function renderComparisonContent(qualityDataA, rockDataA, quantizationDataA, qualityDataB, rockDataB, quantizationDataB, versionIdA, versionIdB) {
     const content = document.getElementById('content');
     destroyCharts();
+    window.currentQualityQuantization = hasQualityQuantizationData(quantizationDataB) ? quantizationDataB : quantizationDataA;
 
     const versionALabel = VERSIONS.find(v => v.id === versionIdA)?.label || versionIdA;
     const versionBLabel = VERSIONS.find(v => v.id === versionIdB)?.label || versionIdB;
@@ -152,7 +168,8 @@ function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockData
                 const itemB = itemsB.find(b => b.name === itemA.name);
                 if (!itemB) continue;
 
-                const chartContainer = createComparisonChartSection(category, itemA, itemB, versionALabel, versionBLabel);
+                const categoryRockData = category === 'Ship Mineables' ? (rockDataB || rockDataA) : null;
+                const chartContainer = createComparisonChartSection(category, itemA, itemB, versionALabel, versionBLabel, categoryRockData);
                 grid.appendChild(chartContainer);
             }
 
@@ -164,6 +181,18 @@ function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockData
     // Add rock composition comparison
     const rockComparison = createRockCompositionComparison(rockDataA, rockDataB, versionALabel, versionBLabel);
     content.appendChild(rockComparison);
+
+    if (hasQualityQuantizationData(quantizationDataA)) {
+        content.appendChild(createQualityQuantizationSection(quantizationDataA, {
+            title: `Quality Quantization Bands - ${versionALabel}`
+        }));
+    }
+
+    if (versionIdB !== versionIdA && hasQualityQuantizationData(quantizationDataB)) {
+        content.appendChild(createQualityQuantizationSection(quantizationDataB, {
+            title: `Quality Quantization Bands - ${versionBLabel}`
+        }));
+    }
 
     // Add footer
     const footer = document.createElement('footer');
@@ -184,9 +213,10 @@ function renderComparisonContent(qualityDataA, rockDataA, qualityDataB, rockData
 }
 
 // Render content to the page
-function renderContent(qualityData, rockData, rockCrackerData, versionId) {
+function renderContent(qualityData, rockData, rockCrackerData, quantizationData, versionId) {
     const content = document.getElementById('content');
     destroyCharts();
+    window.currentQualityQuantization = quantizationData;
 
     const versionLabel = VERSIONS.find(v => v.id === versionId)?.label || versionId;
 
@@ -280,6 +310,8 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
 
         ${rcdSectionHtml}
 
+        <div id="quality-quantization"></div>
+
         <div class="composition-section" id="rock-compositions">
             <h2 class="category-title">💎 Rock Composition Ranges</h2>
             <div class="info-box">
@@ -328,6 +360,11 @@ function renderContent(qualityData, rockData, rockCrackerData, versionId) {
         if (rockCrackerData.torite?.length > 0) {
             rcdGrid.appendChild(createCategorySection({ category: 'Torite Only', items: rockCrackerData.torite }));
         }
+    }
+
+    const quantizationContainer = document.getElementById('quality-quantization');
+    if (quantizationContainer && hasQualityQuantizationData(quantizationData)) {
+        quantizationContainer.appendChild(createQualityQuantizationSection(quantizationData));
     }
 
     const rarityGrid = document.getElementById('rarity-grid');

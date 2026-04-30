@@ -1,0 +1,196 @@
+{
+  "categories": {
+    "Creatures": [
+      {
+        "name": "Creature",
+        "default": {
+          "mean": 269,
+          "min": 1,
+          "max": 1000,
+          "stddev": 254
+        },
+        "pyro": {
+          "mean": 295,
+          "min": 1,
+          "max": 1000,
+          "stddev": 254
+        },
+        "improvement": "9.7"
+      }
+    ],
+    "FPS Mineables": [
+      {
+        "name": "FPS Mineable",
+        "carinite": {
+          "mean": 203,
+          "min": 501,
+          "max": 1000,
+          "stddev": 270
+        },
+        "default": {
+          "mean": 201,
+          "min": 201,
+          "max": 1000,
+          "stddev": 298
+        },
+        "pyro": {
+          "mean": 209,
+          "min": 201,
+          "max": 1000,
+          "stddev": 308
+        },
+        "improvement": "4.0"
+      }
+    ],
+    "Ground Mineables": [
+      {
+        "name": "Ground Mineable",
+        "default": {
+          "mean": 297,
+          "min": 1,
+          "max": 1000,
+          "stddev": 256
+        },
+        "pyro": {
+          "mean": 324,
+          "min": 1,
+          "max": 1000,
+          "stddev": 256
+        },
+        "improvement": "9.1"
+      }
+    ],
+    "Harvestables": [
+      {
+        "name": "Gatherable",
+        "default": {
+          "mean": 269,
+          "min": 1,
+          "max": 1000,
+          "stddev": 254
+        },
+        "pyro": {
+          "mean": 295,
+          "min": 1,
+          "max": 1000,
+          "stddev": 254
+        },
+        "improvement": "9.7"
+      }
+    ],
+    "Ship Mineables": [
+      {
+        "name": "Common",
+        "default": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 143
+        },
+        "pyro": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 149
+        },
+        "improvement": "0.0"
+      },
+      {
+        "name": "Uncommon",
+        "default": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 150
+        },
+        "pyro": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 159
+        },
+        "improvement": "0.0"
+      },
+      {
+        "name": "Rare",
+        "default": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 163
+        },
+        "pyro": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 173
+        },
+        "improvement": "0.0"
+      },
+      {
+        "name": "Epic",
+        "default": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 190
+        },
+        "pyro": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 207
+        },
+        "improvement": "0.0"
+      },
+      {
+        "name": "Legendary",
+        "default": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 203
+        },
+        "pyro": {
+          "mean": 500,
+          "min": 501,
+          "max": 1000,
+          "stddev": 225
+        },
+        "improvement": "0.0"
+      }
+    ]
+  },
+  "rockCrackerDistributions": {
+    "rcd": [
+      {
+        "name": "Legendary",
+        "rcd": {
+          "mean": 500,
+          "min": 651,
+          "max": 1000,
+          "stddev": 225,
+          "label": "RCD",
+          "baseType": "rcd",
+          "locationCount": 61
+        },
+        "improvement": 0
+      }
+    ],
+    "torite": [
+      {
+        "name": "Uncommon",
+        "torite": {
+          "mean": 500,
+          "min": 651,
+          "max": 1000,
+          "stddev": 159,
+          "label": "Torite",
+          "baseType": "torite",
+          "locationCount": 61
+        },
+        "improvement": 0
+      }
+    ]
+  }
+}
