@@ -111,12 +111,18 @@ h1 {
 }
 
 .chart-container {
+    position: relative;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     padding: 15px;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
+}
+
+.chart-container:hover,
+.chart-container:focus-within {
+    z-index: 10;
 }
 
 .chart-container canvas {
@@ -866,7 +872,7 @@ h1 {
     padding: 15px;
     min-width: 200px;
     max-width: 300px;
-    z-index: 1000;
+    z-index: 1400;
     transition: opacity 0.3s ease, transform 0.3s ease;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
