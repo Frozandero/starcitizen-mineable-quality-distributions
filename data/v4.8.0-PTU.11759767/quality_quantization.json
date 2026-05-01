@@ -1,0 +1,1777 @@
+{
+  "materials": [
+    {
+      "id": "agricium",
+      "name": "Agricium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_agricium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 346
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 588
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 667
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 796
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 852
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 943
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 971
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "aluminum",
+      "name": "Aluminum",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_aluminum.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 318
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 511
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 614
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 783
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 896
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 919
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 953
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "aphorite",
+      "name": "Aphorite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_aphorite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 348
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 523
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 686
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 717
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 861
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 975
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "aslarite",
+      "name": "Aslarite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_aslarite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 287
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 575
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 602
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 741
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 854
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 927
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 963
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "beradom",
+      "name": "Beradom",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_beradom.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 287
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 578
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 656
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 723
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 881
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 937
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 969
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "beryl",
+      "name": "Beryl",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_beryl.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 324
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 547
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 677
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 717
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 860
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 937
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 955
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "bexalite",
+      "name": "Bexalite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_bexalite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 302
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 597
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 632
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 756
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 875
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 941
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 959
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "borase",
+      "name": "Borase",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_borase.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 359
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 584
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 676
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 743
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 892
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 903
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 976
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "carinite",
+      "name": "Carinite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_carinite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 273
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 554
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 647
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 716
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 880
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 909
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 959
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "copper",
+      "name": "Copper",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_copper.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 359
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 593
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 652
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 742
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 855
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 917
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 958
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "corundum",
+      "name": "Corundum",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_corundum.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 309
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 504
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 665
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 793
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 886
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 904
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 971
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "dolivine",
+      "name": "Dolivine",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_dolivine.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 304
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 577
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 621
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 743
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 886
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 901
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 957
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "feynmaline",
+      "name": "Feynmaline",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_feynmaline.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 371
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 561
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 682
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 769
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 880
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 906
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 965
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "glacosite",
+      "name": "Glacosite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_glacosite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 360
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 567
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 678
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 724
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 857
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 972
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_gold.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 264
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 553
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 644
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 786
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 864
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 959
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "hadanite",
+      "name": "Hadanite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_hadanite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 274
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 526
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 665
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 762
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 867
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 959
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "hephaestanite",
+      "name": "Hephaestanite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_hephaestanite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 330
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 572
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 692
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 758
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 896
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 975
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "rawice",
+      "name": "Ice",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_rawice.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 322
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 561
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 659
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 714
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 873
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 922
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 966
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "iron",
+      "name": "Iron",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_iron.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 325
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 521
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 664
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 710
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 874
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 907
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 970
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "jaclium",
+      "name": "Jaclium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_jaclium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 284
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 576
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 607
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 781
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 864
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 941
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 955
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "janalite",
+      "name": "Janalite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_janalite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 269
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 596
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 632
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 732
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 898
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 926
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 964
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "laranite",
+      "name": "Laranite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_laranite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 298
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 510
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 698
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 707
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 858
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 910
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 975
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "lindinium",
+      "name": "Lindinium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_lindinium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 305
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 585
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 618
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 729
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 853
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 930
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 954
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "ouratite",
+      "name": "Ouratite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_ouratite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 310
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 523
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 647
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 779
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 860
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 912
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 960
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "quantainium",
+      "name": "Quantainium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_quantainium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 344
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 514
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 669
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 762
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 852
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 901
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 974
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "quartz",
+      "name": "Quartz",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_quartz.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 330
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 522
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 641
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 710
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 899
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 914
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 969
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "riccite",
+      "name": "Riccite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_riccite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 325
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 525
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 671
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 743
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 870
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 942
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 965
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "sadaryx",
+      "name": "Sadaryx",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_sadaryx.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 258
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 510
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 688
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 797
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 865
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 940
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 971
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "saldynium",
+      "name": "Saldynium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_saldynium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 301
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 575
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 674
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 757
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 861
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 938
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 955
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "savrilium",
+      "name": "Savrilium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_savrilium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 322
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 580
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 636
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 776
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 878
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 905
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 967
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "silicon",
+      "name": "Silicon",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_silicon.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 310
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 510
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 672
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 782
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 889
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 926
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 968
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "stileron",
+      "name": "Stileron",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_stileron.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 330
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 517
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 681
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 747
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 874
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 947
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 972
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "taranite",
+      "name": "Taranite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_taranite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 310
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 525
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 646
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 718
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 853
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 925
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 957
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "tin",
+      "name": "Tin",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_tin.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 340
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 537
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 664
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 704
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 880
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 940
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 964
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "titanium",
+      "name": "Titanium",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_titanium.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 295
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 516
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 622
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 784
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 866
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 916
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 959
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "torite",
+      "name": "Torite",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_torite.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 262
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 528
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 661
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 785
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 873
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 944
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 951
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    },
+    {
+      "id": "tungsten",
+      "name": "Tungsten",
+      "recordPath": "libs/foundry/records/crafting/qualityquantization/quantization_tungsten.xml",
+      "bands": [
+        {
+          "start": 0,
+          "end": 399,
+          "mappedValue": 363
+        },
+        {
+          "start": 400,
+          "end": 599,
+          "mappedValue": 530
+        },
+        {
+          "start": 600,
+          "end": 699,
+          "mappedValue": 662
+        },
+        {
+          "start": 700,
+          "end": 799,
+          "mappedValue": 787
+        },
+        {
+          "start": 800,
+          "end": 899,
+          "mappedValue": 858
+        },
+        {
+          "start": 900,
+          "end": 949,
+          "mappedValue": 902
+        },
+        {
+          "start": 950,
+          "end": 998,
+          "mappedValue": 964
+        },
+        {
+          "start": 999,
+          "end": 1000,
+          "mappedValue": 1000
+        }
+      ]
+    }
+  ],
+  "bandRanges": [
+    {
+      "start": 0,
+      "end": 399
+    },
+    {
+      "start": 400,
+      "end": 599
+    },
+    {
+      "start": 600,
+      "end": 699
+    },
+    {
+      "start": 700,
+      "end": 799
+    },
+    {
+      "start": 800,
+      "end": 899
+    },
+    {
+      "start": 900,
+      "end": 949
+    },
+    {
+      "start": 950,
+      "end": 998
+    },
+    {
+      "start": 999,
+      "end": 1000
+    }
+  ]
+}
