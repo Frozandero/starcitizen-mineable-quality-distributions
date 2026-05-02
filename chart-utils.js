@@ -428,8 +428,10 @@ function createTooltipCallbacks(clampEnabled = false) {
             if (dist) {
                 let prob;
                 if (band) {
-                    prob = probabilityBetween(band.start, band.end, dist.mean, dist.stddev, clampEnabled, dist.min, dist.max);
-                    return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% in bucket`;
+                    prob = clampEnabled
+                        ? probabilityGreaterThanClamped(band.start, dist.mean, dist.stddev, dist.min, dist.max)
+                        : probabilityGreaterThan(band.start, dist.mean, dist.stddev, dist.max);
+                    return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% bucket or higher`;
                 } else if (clampEnabled) {
                     prob = probabilityGreaterThanClamped(qualityValue, dist.mean, dist.stddev, dist.min, dist.max);
                     return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% above this roll`;
