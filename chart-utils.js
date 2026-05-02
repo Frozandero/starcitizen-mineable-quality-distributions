@@ -51,6 +51,24 @@ function formatMappedValueLabel(band) {
         : `${band.mappedMin}-${band.mappedMax}`;
 }
 
+function formatQualityPercent(value) {
+    if (!Number.isFinite(value)) {
+        return '';
+    }
+
+    return `${(value / 10).toFixed(1).replace(/\.0$/, '')}%`;
+}
+
+function formatMappedQualityPercentLabel(band) {
+    if (!band) {
+        return '';
+    }
+
+    return band.mappedMin === band.mappedMax
+        ? formatQualityPercent(band.mappedMin)
+        : `${formatQualityPercent(band.mappedMin)}-${formatQualityPercent(band.mappedMax)}`;
+}
+
 function createQualityQuantizationOverlay(qualityQuantization, materialNames = null) {
     if (!qualityQuantization?.materials?.length) {
         return null;
@@ -262,6 +280,27 @@ function probabilityGreaterThan(x, mean, stddev, maxVal) {
     return normalizedProb;
 }
 
+function probabilityBetween(xMin, xMax, mean, stddev, clamp = false, minVal = 1, maxVal = 1000) {
+    const lower = clamp ? Math.max(xMin, minVal) : xMin;
+    const upper = clamp ? Math.min(xMax, maxVal) : xMax;
+
+    if (upper < lower) {
+        return 0;
+    }
+
+    const rawProb = normalDistributionCDF(upper, mean, stddev) - normalDistributionCDF(lower, mean, stddev);
+    if (!clamp) {
+        return Math.max(0, Math.min(1, rawProb));
+    }
+
+    const totalProb = normalDistributionCDF(maxVal, mean, stddev) - normalDistributionCDF(minVal, mean, stddev);
+    if (totalProb <= 0) {
+        return 0;
+    }
+
+    return Math.max(0, Math.min(1, rawProb / totalProb));
+}
+
 // Generate distribution data for charts
 function generateDistributionData(dist, clamp = false) {
     const data = [];
@@ -354,10 +393,26 @@ function getProbabilityDecimals() {
 }
 
 function createTooltipCallbacks(clampEnabled = false) {
+    function getTooltipBand(context) {
+        const qualityValue = context?.parsed?.x;
+        const quantizationOptions = context?.chart?.options?.plugins?.qualityQuantizationOverlay;
+
+        if (!quantizationOptions?.enabled) {
+            return null;
+        }
+
+        return findQuantizationBand(qualityValue, quantizationOptions.bands);
+    }
+
     return {
         title: function (context) {
             if (context && context.length > 0) {
-                return `Quality: ${Math.round(context[0].parsed.x)}`;
+                const band = getTooltipBand(context[0]);
+                if (band) {
+                    return `Quality: ${formatMappedQualityPercentLabel(band)}`;
+                }
+
+                return `Roll: ${Math.round(context[0].parsed.x)}`;
             }
             return '';
         },
@@ -367,31 +422,124 @@ function createTooltipCallbacks(clampEnabled = false) {
             const distName = context.dataset.label;
             const qualityValue = context.parsed.x;
             const densityValue = context.parsed.y;
+            const band = getTooltipBand(context);
 
             const dist = context.dataset.customData;
-            let probText = '';
             if (dist) {
                 let prob;
-                if (clampEnabled) {
+                if (band) {
+                    prob = probabilityBetween(band.start, band.end, dist.mean, dist.stddev, clampEnabled, dist.min, dist.max);
+                    return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% in bucket`;
+                } else if (clampEnabled) {
                     prob = probabilityGreaterThanClamped(qualityValue, dist.mean, dist.stddev, dist.min, dist.max);
+                    return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% above this roll`;
                 } else {
                     prob = probabilityGreaterThan(qualityValue, dist.mean, dist.stddev, dist.max);
-                }
-                probText = `\nP(x > ${Math.round(qualityValue)}): ${(prob * 100).toFixed(getProbabilityDecimals())}%`;
-            }
-
-            const quantizationOptions = context.chart?.options?.plugins?.qualityQuantizationOverlay;
-            let quantizationText = '';
-            if (quantizationOptions?.enabled) {
-                const band = findQuantizationBand(qualityValue, quantizationOptions.bands);
-                if (band) {
-                    quantizationText = `\nMapped quality: ${formatMappedValueLabel(band)}`;
+                    return `${distName}: ${(prob * 100).toFixed(getProbabilityDecimals())}% above this roll`;
                 }
             }
 
-            return `${distName}: ${densityValue.toFixed(6)}${probText}${quantizationText}`;
+            return `${distName}: density ${densityValue.toFixed(6)}`;
         }
     };
+}
+
+function getExternalTooltipElement() {
+    let tooltipEl = document.getElementById('chartjs-external-tooltip');
+
+    if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+        tooltipEl.id = 'chartjs-external-tooltip';
+        tooltipEl.style.background = 'rgba(0, 0, 0, 0.8)';
+        tooltipEl.style.border = '1px solid rgba(0, 217, 255, 0.5)';
+        tooltipEl.style.borderRadius = '4px';
+        tooltipEl.style.color = '#fff';
+        tooltipEl.style.fontFamily = 'Rajdhani, sans-serif';
+        tooltipEl.style.fontSize = '13px';
+        tooltipEl.style.fontWeight = '600';
+        tooltipEl.style.opacity = '0';
+        tooltipEl.style.pointerEvents = 'none';
+        tooltipEl.style.position = 'fixed';
+        tooltipEl.style.transform = 'translateY(-50%)';
+        tooltipEl.style.transition = 'opacity 0.1s ease';
+        tooltipEl.style.zIndex = '10000';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'chartjs-external-tooltip-title';
+        titleEl.style.color = '#00d9ff';
+        titleEl.style.fontWeight = '700';
+        titleEl.style.margin = '0 0 4px';
+
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'chartjs-external-tooltip-body';
+
+        tooltipEl.appendChild(titleEl);
+        tooltipEl.appendChild(bodyEl);
+        document.body.appendChild(tooltipEl);
+    }
+
+    return tooltipEl;
+}
+
+function renderExternalTooltip(context) {
+    const { chart, tooltip } = context;
+    const tooltipEl = getExternalTooltipElement();
+
+    if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = '0';
+        return;
+    }
+
+    const titleEl = tooltipEl.querySelector('.chartjs-external-tooltip-title');
+    const bodyEl = tooltipEl.querySelector('.chartjs-external-tooltip-body');
+    titleEl.textContent = tooltip.title.join(' ');
+    bodyEl.innerHTML = '';
+
+    tooltip.body.forEach((bodyItem, index) => {
+        const colors = tooltip.labelColors[index] || {};
+        const rowEl = document.createElement('div');
+        rowEl.style.alignItems = 'center';
+        rowEl.style.display = 'flex';
+        rowEl.style.gap = '4px';
+        rowEl.style.whiteSpace = 'nowrap';
+
+        const colorEl = document.createElement('span');
+        colorEl.style.background = colors.backgroundColor || colors.borderColor || '#fff';
+        colorEl.style.border = `2px solid ${colors.borderColor || '#fff'}`;
+        colorEl.style.display = 'inline-block';
+        colorEl.style.flex = '0 0 auto';
+        colorEl.style.height = '10px';
+        colorEl.style.width = '10px';
+
+        const textEl = document.createElement('span');
+        textEl.textContent = bodyItem.lines.join(' ');
+
+        rowEl.appendChild(colorEl);
+        rowEl.appendChild(textEl);
+        bodyEl.appendChild(rowEl);
+    });
+
+    tooltipEl.style.padding = `${tooltip.options.padding}px`;
+    tooltipEl.style.opacity = '1';
+
+    const canvasRect = chart.canvas.getBoundingClientRect();
+    const padding = 12;
+    const caretX = canvasRect.left + tooltip.caretX;
+    const caretY = canvasRect.top + tooltip.caretY;
+    const tooltipRect = tooltipEl.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const placeRight = caretX + padding + tooltipRect.width <= viewportWidth;
+    const left = placeRight
+        ? caretX + padding
+        : Math.max(padding, caretX - tooltipRect.width - padding);
+    const top = Math.min(
+        Math.max(caretY, padding + tooltipRect.height / 2),
+        viewportHeight - padding - tooltipRect.height / 2
+    );
+
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
 }
 
 // Create chart scales configuration
@@ -435,6 +583,9 @@ function createChartOptions(clampEnabled = false, overrides = {}) {
         plugins: {
             legend: { display: false },
             tooltip: {
+                enabled: false,
+                external: renderExternalTooltip,
+                position: 'nearest',
                 mode: 'index',
                 intersect: false,
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
