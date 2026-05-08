@@ -190,22 +190,6 @@ async function loadDataWithCache(fetchUrl, cacheKey) {
     return data;
 }
 
-// Preload and cache multiple data files
-async function preloadCache(versionId) {
-    try {
-        const [qualityData, rockData, quantizationData] = await Promise.all([
-            loadDataWithCache(`./data/${versionId}/quality_distributions.json`, `${versionId}_quality`),
-            loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`),
-            loadDataWithCache(`./data/${versionId}/quality_quantization.json`, `${versionId}_quality_quantization`).catch(() => null)
-        ]);
-
-        return { qualityData, rockData, quantizationData };
-    } catch (error) {
-        console.error('Error preloading cache:', error);
-        throw error;
-    }
-}
-
 // Export functions for use in other modules
 window.cacheUtils = {
     getBuildNonce,
@@ -217,6 +201,5 @@ window.cacheUtils = {
     formatCacheSize,
     logCacheStats,
     loadDataWithCache,
-    preloadCache,
     ensureFreshBuildInfo
 };

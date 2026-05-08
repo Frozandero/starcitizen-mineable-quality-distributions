@@ -6,18 +6,6 @@ let versionA = null;
 let versionB = null;
 let clampEnabled = true;
 
-async function loadOptionalVersionData(versionId, fileName, cacheKey, fallbackValue = null) {
-    try {
-        return await window.cacheUtils.loadDataWithCache(`./data/${versionId}/${fileName}`, cacheKey);
-    } catch (error) {
-        const message = String(error?.message || error);
-        if (!message.includes('404')) {
-            console.warn(`Optional data file could not be loaded: ${fileName}`, error);
-        }
-        return fallbackValue;
-    }
-}
-
 // Set view mode (single or compare)
 function setViewMode(mode) {
     viewMode = mode;
@@ -49,19 +37,15 @@ async function loadVersion(versionId) {
     content.innerHTML = '<div class="loading">Loading data...</div>';
 
     try {
-        const [qualityData, rockData, quantizationData] = await Promise.all([
-            window.cacheUtils.loadDataWithCache(`./data/${versionId}/quality_distributions.json`, `${versionId}_quality`),
-            window.cacheUtils.loadDataWithCache(`./data/${versionId}/rock_compositions.json`, `${versionId}_rock`),
-            loadOptionalVersionData(versionId, 'quality_quantization.json', `${versionId}_quality_quantization`, null)
-        ]);
+        const bundle = await window.viewerDataLoader.loadViewerDataBundle(versionId);
 
-        const qualityJson = qualityData;
-        const rockJson = rockData;
-
-        const qualityDistributions = qualityJson.categories || qualityJson;
-        const rockCrackerData = qualityJson.rockCrackerDistributions || null;
-
-        renderContent(qualityDistributions, rockJson, rockCrackerData, quantizationData, versionId);
+        renderContent(
+            bundle.qualityDistributions,
+            bundle.rockCompositions,
+            bundle.rockCrackerDistributions,
+            bundle.qualityQuantization,
+            bundle.versionId
+        );
     } catch (error) {
         console.error('Error loading version data:', error);
         content.innerHTML = '<div class="loading">Error loading data. Please try again.</div>';
@@ -79,22 +63,21 @@ async function loadComparison(versionIdA, versionIdB) {
     }
 
     try {
-        const [qualityDataA, rockDataA, quantizationDataA, qualityDataB, rockDataB, quantizationDataB] = await Promise.all([
-            window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/quality_distributions.json`, `${versionIdA}_quality`),
-            window.cacheUtils.loadDataWithCache(`./data/${versionIdA}/rock_compositions.json`, `${versionIdA}_rock`),
-            loadOptionalVersionData(versionIdA, 'quality_quantization.json', `${versionIdA}_quality_quantization`, null),
-            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/quality_distributions.json`, `${versionIdB}_quality`),
-            window.cacheUtils.loadDataWithCache(`./data/${versionIdB}/rock_compositions.json`, `${versionIdB}_rock`),
-            loadOptionalVersionData(versionIdB, 'quality_quantization.json', `${versionIdB}_quality_quantization`, null)
-        ]);
-
-        const qualityDistributionsA = qualityDataA.categories || qualityDataA;
-        const qualityDistributionsB = qualityDataB.categories || qualityDataB;
+        const { bundleA, bundleB } = await window.viewerDataLoader.loadViewerDataComparison(versionIdA, versionIdB);
 
         versionA = versionIdA;
         versionB = versionIdB;
 
-        renderComparisonContent(qualityDistributionsA, rockDataA, quantizationDataA, qualityDistributionsB, rockDataB, quantizationDataB, versionIdA, versionIdB);
+        renderComparisonContent(
+            bundleA.qualityDistributions,
+            bundleA.rockCompositions,
+            bundleA.qualityQuantization,
+            bundleB.qualityDistributions,
+            bundleB.rockCompositions,
+            bundleB.qualityQuantization,
+            bundleA.versionId,
+            bundleB.versionId
+        );
     } catch (error) {
         console.error('Error loading comparison data:', error);
         content.innerHTML = `<div class="loading">Error loading comparison data: ${error.message}. Please try again.</div>`;
