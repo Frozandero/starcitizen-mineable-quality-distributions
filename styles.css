@@ -12,6 +12,7 @@ body {
     color: #e0e0e0;
     min-height: 100vh;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .container {
@@ -127,6 +128,7 @@ h1 {
 
 .chart-container canvas {
     max-width: 100%;
+    display: block;
 }
 
 .chart-header {
@@ -273,6 +275,7 @@ h1 {
     display: flex;
     gap: 30px;
     justify-content: center;
+    flex-wrap: wrap;
     margin: 20px 0;
     padding: 15px;
     background: rgba(0, 0, 0, 0.2);
@@ -418,12 +421,11 @@ h1 {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease;
     min-width: 0;
 }
 
 .rarity-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
 }
 
@@ -1032,14 +1034,141 @@ body.chart-modal-open {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 14px;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .header {
+        margin-bottom: 20px;
+    }
 
     .charts-grid,
     .rarity-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
     }
 
     h1 {
-        font-size: 1.8rem;
+        font-size: 1.75rem;
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+
+    .subtitle {
+        max-width: 28rem;
+        margin: 0 auto 22px;
+        font-size: 1rem;
+        line-height: 1.35;
+    }
+
+    .category-section,
+    .composition-section,
+    .quantization-section {
+        padding: 14px;
+        margin-bottom: 18px;
+        border-radius: 10px;
+    }
+
+    .category-title {
+        font-size: 1.2rem;
+        line-height: 1.25;
+        margin-bottom: 14px;
+    }
+
+    .chart-container,
+    .rarity-card,
+    .rock-comparison-card {
+        padding: 12px;
+    }
+
+    .chart-header {
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chart-title {
+        font-size: 0.9rem;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .chart-title-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 6px;
+    }
+
+    .badge,
+    .version-badge {
+        margin-left: 0;
+        padding: 3px 7px;
+        font-size: 0.68rem;
+    }
+
+    .chart-expand-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+    }
+
+    .chart-container canvas {
+        min-height: 190px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        padding: 10px;
+        min-width: 0;
+    }
+
+    .stat-label {
+        font-size: 0.78rem;
+        line-height: 1.15;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+    }
+
+    .legend {
+        justify-content: flex-start;
+        gap: 10px 14px;
+        padding: 12px;
+        margin: 16px 0;
+        overflow: hidden;
+    }
+
+    .legend-item {
+        flex: 1 1 130px;
+        min-width: 0;
+    }
+
+    .legend-color {
+        width: 22px;
+        flex: 0 0 22px;
+    }
+
+    .legend-label {
+        font-size: 0.82rem;
+        line-height: 1.15;
+    }
+
+    .info-box {
+        padding: 12px;
+        font-size: 0.86rem;
+        line-height: 1.45;
     }
 
     .composition-row {
@@ -1056,20 +1185,34 @@ body.chart-modal-open {
     .compare-selector {
         flex-direction: column;
         gap: 10px;
+        align-items: stretch;
     }
 
     #version-select,
     #version-select-a,
     #version-select-b {
         width: 100%;
+        min-width: 0;
+        min-height: 46px;
+        padding: 9px 12px;
+        font-size: 1rem;
     }
 
-    .rock-comparison-grid {
-        grid-template-columns: 1fr;
+    .version-label {
+        text-align: center;
     }
 
     .mode-toggle {
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .mode-btn {
+        min-height: 42px;
+    }
+
+    .rock-comparison-grid {
+        grid-template-columns: 1fr;
     }
 
     .vs-label {
@@ -1077,12 +1220,13 @@ body.chart-modal-open {
     }
 
     .clamp-toggle-fixed {
-        bottom: 10px;
-        right: 10px;
-        padding: 8px 10px;
-        gap: 8px;
-        flex-wrap: wrap;
-        max-width: calc(100vw - 20px);
+        position: static;
+        justify-content: center;
+        margin-top: 14px;
+        padding: 8px;
+        gap: 7px;
+        max-width: none;
+        border-radius: 12px;
     }
 
     .clamp-toggle-label {
@@ -1095,6 +1239,59 @@ body.chart-modal-open {
 
     .probability-decimals-select {
         min-width: 54px;
+    }
+
+    .comparison-summary-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .quantization-table-wrapper {
+        margin-left: -2px;
+        margin-right: -2px;
+    }
+
+    .quantization-table {
+        min-width: 680px;
+    }
+
+    .rarity-title {
+        font-size: 1rem;
+    }
+
+    .rock-item {
+        padding: 10px;
+    }
+
+    .rock-name {
+        font-size: 0.95rem;
+        overflow-wrap: anywhere;
+    }
+
+    .composition-label {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .composition-range {
+        min-width: auto;
+    }
+
+    .quality-scale {
+        min-width: auto;
+    }
+
+    .category-title-tooltip .tooltip-content {
+        left: 0;
+        right: 0;
+        min-width: 0;
+        max-width: none;
+        transform: translateY(10px);
+    }
+
+    .category-title-tooltip:hover .tooltip-content {
+        transform: translateY(-5px);
     }
 
     .chart-expand-modal {
@@ -1143,5 +1340,37 @@ body.chart-modal-open {
     .ai-disclaimer-content strong {
         color: #00d9ff;
         font-weight: 600;
+    }
+}
+
+@media (max-width: 430px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.55rem;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+    }
+
+    .category-section,
+    .composition-section,
+    .quantization-section {
+        padding: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .chart-container canvas {
+        min-height: 205px;
+    }
+
+    .clamp-toggle-label {
+        font-size: 0.68rem;
     }
 }

@@ -546,6 +546,8 @@ function renderExternalTooltip(context) {
 
 // Create chart scales configuration
 function createChartScales() {
+    const isMobileViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+
     return {
         x: {
             type: 'linear',
@@ -553,24 +555,32 @@ function createChartScales() {
             max: 1000,
             display: true,
             title: {
-                display: true,
+                display: !isMobileViewport,
                 text: 'Quality Level',
                 color: '#888',
                 font: { family: 'Rajdhani' }
             },
-            ticks: { color: '#666', font: { family: 'Rajdhani' } },
+            ticks: {
+                color: '#666',
+                font: { family: 'Rajdhani', size: isMobileViewport ? 10 : 12 },
+                maxTicksLimit: isMobileViewport ? 5 : 11
+            },
             grid: { color: 'rgba(255,255, 255, 0.05)' }
         },
         y: {
             beginAtZero: true,
             display: true,
             title: {
-                display: true,
+                display: !isMobileViewport,
                 text: 'Probability Density',
                 color: '#888',
                 font: { family: 'Rajdhani' }
             },
-            ticks: { color: '#666', font: { family: 'Rajdhani' } },
+            ticks: {
+                color: '#666',
+                font: { family: 'Rajdhani', size: isMobileViewport ? 10 : 12 },
+                maxTicksLimit: isMobileViewport ? 4 : 8
+            },
             grid: { color: 'rgba(255,255, 255, 0.05)' }
         }
     };
@@ -578,10 +588,11 @@ function createChartScales() {
 
 // Create chart options
 function createChartOptions(clampEnabled = false, overrides = {}) {
+    const isMobileViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
     const defaultOptions = {
         responsive: true,
         maintainAspectRatio: true,
-        aspectRatio: 2,
+        aspectRatio: isMobileViewport ? 1.35 : 2,
         plugins: {
             legend: { display: false },
             tooltip: {
